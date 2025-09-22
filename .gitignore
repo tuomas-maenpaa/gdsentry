@@ -1,0 +1,55 @@
+# Godot Engine specific files
+
+# Godot project files
+*.tscn
+*.tres
+*.res
+*.godot
+
+# Godot import files
+*.import
+
+# Godot cache files
+.godot/
+
+# Godot editor files
+*.uid
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+build/
+dist/
+*.exe
+*.app
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test reports (if you want to ignore them)
+test_reports/
+reports/
+
+# Documentation build files (if you have Sphinx or similar)
+docs/build/
+docs/_build/
+
+# Environment files
+.env
+.env.local
+
+# Backup files
+*.bak
+*.orig

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GDSentry Tests" type="GodotRunConfiguration" factoryName="Godot">
+    <option name="scene" value="gdsentry/core/test_runner.gd" />
+    <option name="arguments" value="--discover" />
+    <method v="2" />
+  </configuration>
+</component>

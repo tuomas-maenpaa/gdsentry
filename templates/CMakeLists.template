@@ -1,0 +1,12 @@
+# GDSentry Test Integration
+add_custom_target(test
+    COMMAND godot --script gdsentry/core/test_runner.gd --discover
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running GDSentry tests"
+)
+
+add_custom_target(coverage
+    COMMAND godot --script gdsentry/core/test_runner.gd --discover --coverage
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running GDSentry tests with coverage"
+)

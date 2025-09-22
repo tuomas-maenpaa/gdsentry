@@ -1,0 +1,45 @@
+# GDSentry Performance Test Template
+# Test class: {{CLASS_NAME}}
+
+extends GDSentry.PerformanceTest
+
+class_name {{CLASS_NAME}}PerformanceTest
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Performance tests for {{CLASS_NAME}}"
+	test_tags = ["performance", "benchmark"]
+	test_priority = "medium"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	# Run all {{CLASS_NAME}} performance tests
+	run_test("test_{{METHOD_NAME}}_performance", func(): return test_{{METHOD_NAME}}_performance())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}_performance() -> bool:
+	# Test {{METHOD_NAME}} performance characteristics
+	var instance = {{CLASS_NAME}}.new()
+
+	# Benchmark operation
+	var benchmark_result = benchmark_operation(
+		"test_{{METHOD_NAME}}",
+		func(): instance.{{METHOD_NAME}}(),
+		benchmark_iterations
+	)
+
+	# Performance assertions
+	return assert_benchmark_performance("test_{{METHOD_NAME}}", benchmark_result, 100.0)
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	# Cleanup test resources
+	pass

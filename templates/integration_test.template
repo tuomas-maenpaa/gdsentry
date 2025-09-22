@@ -1,0 +1,42 @@
+# GDSentry Integration Test Template
+# Test class: {{CLASS_NAME}}
+
+extends GDSentry.IntegrationTest
+
+class_name {{CLASS_NAME}}IntegrationTest
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Integration tests for {{CLASS_NAME}}"
+	test_tags = ["integration", "system"]
+	test_priority = "high"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	# Run all {{CLASS_NAME}} integration tests
+	run_test("test_{{METHOD_NAME}}_integration", func(): return test_{{METHOD_NAME}}_integration())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}_integration() -> bool:
+	# Test {{METHOD_NAME}} system integration
+	# Check system components
+	var components_ready = assert_system_components_initialized("System components should be ready")
+
+	if not components_ready:
+		return false
+
+	# Test component communication
+	return assert_component_communication("component1", "component2", "Components should communicate properly")
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	# Cleanup test resources
+	pass

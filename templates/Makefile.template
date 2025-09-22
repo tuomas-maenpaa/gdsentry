@@ -1,0 +1,13 @@
+.PHONY: test coverage clean
+
+test:
+	godot --script gdsentry/core/test_runner.gd --discover
+
+coverage:
+	godot --script gdsentry/core/test_runner.gd --discover --coverage
+
+clean:
+	rm -rf test_results/
+	rm -rf coverage/
+	rm -rf profiling/
+

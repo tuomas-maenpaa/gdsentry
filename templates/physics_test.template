@@ -1,0 +1,42 @@
+# GDSentry Physics Test Template
+# Test class: {{CLASS_NAME}}
+
+extends GDSentry.PhysicsTest
+
+class_name {{CLASS_NAME}}PhysicsTest
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Physics tests for {{CLASS_NAME}}"
+	test_tags = ["physics", "simulation"]
+	test_priority = "medium"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	# Run all {{CLASS_NAME}} physics tests
+	run_test("test_{{METHOD_NAME}}_physics", func(): return test_{{METHOD_NAME}}_physics())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}_physics() -> bool:
+	# Test {{METHOD_NAME}} physics behavior
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Wait for physics to initialize
+	await wait_for_physics_frames(physics_frame_wait)
+
+	# Physics assertions
+	return assert_physics_body_awake(instance, "Physics body should be awake")
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	# Cleanup test resources
+	pass

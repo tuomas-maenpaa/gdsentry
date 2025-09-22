@@ -1,0 +1,45 @@
+# GDSentry Visual Test Template
+# Test class: {{CLASS_NAME}}
+
+extends GDSentry.Node2DTest
+
+class_name {{CLASS_NAME}}VisualTest
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Visual tests for {{CLASS_NAME}}"
+	test_tags = ["visual", "ui"]
+	test_priority = "medium"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	# Run all {{CLASS_NAME}} visual tests
+	run_test("test_{{METHOD_NAME}}_visual", func(): return test_{{METHOD_NAME}}_visual())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}_visual() -> bool:
+	# Test {{METHOD_NAME}} visual appearance
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Wait for rendering
+	await wait_for_render_frames(2)
+
+	# Take screenshot for visual verification
+	take_screenshot("{{CLASS_NAME}}_{{METHOD_NAME}}")
+
+	# Visual assertions
+	return assert_visible(instance, "Instance should be visible")
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	# Cleanup test resources
+	pass

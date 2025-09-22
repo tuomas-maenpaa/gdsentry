@@ -1,0 +1,21 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug GDSentry Test",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}",
+			"scene": "gdsentry/core/test_runner.gd",
+			"args": ["--test-path", "${file}"]
+		},
+		{
+			"name": "Run All GDSentry Tests",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}",
+			"scene": "gdsentry/core/test_runner.gd",
+			"args": ["--discover"]
+		}
+	]
+}

@@ -1,0 +1,17 @@
+name: gdsentry-docs
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core Python
+  - python=3.12
+
+  # Sphinx and documentation
+  - sphinx>=7.0
+  - sphinx-rtd-theme
+  - sphinx-copybutton  # Copy code snippets
+  - sphinx-design  # Modern UI components
+  - myst-parser  # If you want to mix Markdown with reStructuredText
+
+  - pip:
+    - gdscript-docs-maker  # For extracting documentation from GDScript files

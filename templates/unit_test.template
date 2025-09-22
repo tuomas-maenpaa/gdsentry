@@ -1,0 +1,41 @@
+# GDSentry Unit Test Template
+# Test class: {{CLASS_NAME}}
+
+extends GDSentry.SceneTreeTest
+
+class_name {{CLASS_NAME}}Test
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Unit tests for {{CLASS_NAME}}"
+	test_tags = ["unit", "core"]
+	test_priority = "high"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	# Run all {{CLASS_NAME}} unit tests
+	run_test("test_{{METHOD_NAME}}", func(): return test_{{METHOD_NAME}}())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}() -> bool:
+	# Test {{METHOD_NAME}} functionality
+	var instance = {{CLASS_NAME}}.new()
+
+	# Test implementation here
+	var result = instance.{{METHOD_NAME}}()
+
+	# Assertions
+	return assert_not_null(result, "Result should not be null")
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	# Cleanup test resources
+	pass

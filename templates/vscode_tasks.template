@@ -1,0 +1,25 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run GDSentry Tests",
+			"type": "shell",
+			"command": "godot",
+			"args": ["--script", "gdsentry/core/test_runner.gd", "--discover"],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			}
+		},
+		{
+			"label": "Run Current Test File",
+			"type": "shell",
+			"command": "godot",
+			"args": ["--script", "gdsentry/core/test_runner.gd", "--test-path", "${file}"],
+			"group": "test"
+		}
+	]
+}

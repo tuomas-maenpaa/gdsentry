@@ -1,0 +1,129 @@
+# GDSentry Event Test Template
+# Test class: {{CLASS_NAME}}
+
+extends EventTest
+
+class_name {{CLASS_NAME}}EventTest
+
+# ------------------------------------------------------------------------------
+# TEST SUITE SETUP
+# ------------------------------------------------------------------------------
+func _ready():
+	test_description = "Event tests for {{CLASS_NAME}}"
+	test_tags = ["event", "interaction", "input", "ui"]
+	test_priority = "medium"
+
+# ------------------------------------------------------------------------------
+# TEST SUITE
+# ------------------------------------------------------------------------------
+func run_test_suite() -> void:
+	"""Run all {{CLASS_NAME}} event tests"""
+	run_test("test_{{METHOD_NAME}}_click_events", func(): return test_{{METHOD_NAME}}_click_events())
+	run_test("test_{{METHOD_NAME}}_keyboard_events", func(): return test_{{METHOD_NAME}}_keyboard_events())
+	run_test("test_{{METHOD_NAME}}_drag_events", func(): return test_{{METHOD_NAME}}_drag_events())
+	run_test("test_{{METHOD_NAME}}_event_sequences", func(): return test_{{METHOD_NAME}}_event_sequences())
+
+# ------------------------------------------------------------------------------
+# INDIVIDUAL TESTS
+# ------------------------------------------------------------------------------
+func test_{{METHOD_NAME}}_click_events() -> bool:
+	"""Test {{METHOD_NAME}} click event handling"""
+	var success := true
+
+	# Create test instance
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Test single click
+	var click_pos := Vector2(100, 100)
+	success = success and simulate_mouse_click(click_pos, MOUSE_BUTTON_LEFT)
+
+	# Test double click
+	success = success and simulate_double_click(click_pos, MOUSE_BUTTON_LEFT)
+
+	# Test right click
+	success = success and simulate_mouse_click(click_pos, MOUSE_BUTTON_RIGHT)
+
+	# Verify instance state after clicks
+	success = success and assert_not_null(instance, "{{CLASS_NAME}} should handle click events")
+
+	# Cleanup
+	instance.queue_free()
+	return success
+
+func test_{{METHOD_NAME}}_keyboard_events() -> bool:
+	"""Test {{METHOD_NAME}} keyboard event handling"""
+	var success := true
+
+	# Create test instance
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Test key press
+	success = success and simulate_key_press(KEY_SPACE)
+
+	# Test key combination (Ctrl+C)
+	success = success and simulate_key_press(KEY_C, true, false, true)  # Ctrl+C
+
+	# Test text input
+	success = success and simulate_text_input("test input")
+
+	# Verify instance state after keyboard events
+	success = success and assert_not_null(instance, "{{CLASS_NAME}} should handle keyboard events")
+
+	# Cleanup
+	instance.queue_free()
+	return success
+
+func test_{{METHOD_NAME}}_drag_events() -> bool:
+	"""Test {{METHOD_NAME}} drag event handling"""
+	var success := true
+
+	# Create test instance
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Test drag operation
+	var start_pos := Vector2(50, 50)
+	var end_pos := Vector2(150, 150)
+
+	success = success and simulate_mouse_drag(start_pos, end_pos, MOUSE_BUTTON_LEFT)
+
+	# Verify instance state after drag
+	success = success and assert_not_null(instance, "{{CLASS_NAME}} should handle drag events")
+
+	# Cleanup
+	instance.queue_free()
+	return success
+
+func test_{{METHOD_NAME}}_event_sequences() -> bool:
+	"""Test {{METHOD_NAME}} event sequence handling"""
+	var success := true
+
+	# Create test instance
+	var instance = {{CLASS_NAME}}.new()
+	add_child(instance)
+
+	# Test complex event sequence
+	var events := [
+		{"type": "mouse_click", "position": Vector2(100, 100), "button": MOUSE_BUTTON_LEFT},
+		{"type": "key_press", "key": KEY_TAB},
+		{"type": "mouse_drag", "start": Vector2(100, 100), "end": Vector2(200, 200)},
+		{"type": "text_input", "text": "sequence test"}
+	]
+
+	success = success and simulate_event_sequence(events)
+
+	# Verify instance state after event sequence
+	success = success and assert_not_null(instance, "{{CLASS_NAME}} should handle event sequences")
+
+	# Cleanup
+	instance.queue_free()
+	return success
+
+# ------------------------------------------------------------------------------
+# CLEANUP
+# ------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	"""Cleanup test resources"""
+	pass

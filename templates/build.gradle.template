@@ -1,0 +1,15 @@
+task test(type: Exec) {
+    commandLine 'godot', '--script', 'gdsentry/core/test_runner.gd', '--discover'
+    workingDir rootDir
+}
+
+task coverage(type: Exec) {
+    commandLine 'godot', '--script', 'gdsentry/core/test_runner.gd', '--discover', '--coverage'
+    workingDir rootDir
+}
+
+task gdsentryTest {
+    dependsOn test
+    group = 'verification'
+    description = 'Runs GDSentry tests'
+}
