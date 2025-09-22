@@ -1,14 +1,43 @@
 # GDSentry - Advanced Godot Testing Framework
 
-> **⚠️ Hobby Project** - This is a hobby project. Not actively maintained. Use at your own risk. No support provided.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Godot 4.x](https://img.shields.io/badge/Godot-4.x-blue.svg)](https://godotengine.org/)
+[![Godot 3.5+](https://img.shields.io/badge/Godot-3.5+-blue.svg)](https://godotengine.org/)
+[![Project Status](https://img.shields.io/badge/Status-Hobby%20Project-orange.svg)](https://github.com/tuomas-maenpaa/gdsentry)
+[![Documentation](https://img.shields.io/badge/docs-ready-green.svg)](#documentation--resources)
+
+> **⚠️ Hobby Project** - This is a hobby project. Not actively maintained. Use at your own risk. No support provided at tbe moment.
 >
 > **📄 License Note**: MIT License with commercial attribution requirements. See LICENSE file for details.
+
+GDSentry is comprehensive testing framework for Godot game development, enabling developers to validate game logic, visual presentation, user interactions, physics behavior, and performance characteristics through a unified, extensible platform. Built specifically for Godot's scene-based architecture, it supports headless testing for CI/CD pipelines while providing intuitive APIs for development workflows.
 
 ## Overview
 
 GDSentry represents a fundamental shift in how developers approach testing within the Godot ecosystem. Traditional testing frameworks focus narrowly on unit testing, but GDSentry recognizes that game development demands comprehensive validation across multiple dimensions. Through its project-agnostic design, GDSentry enables developers to validate not just code logic, but also visual presentation, user interaction, physics behavior, and system performance.
 
 This comprehensive approach transforms testing from a compliance activity into an integral part of the development workflow. Developers gain confidence in their code changes while maintaining the creative freedom that makes game development compelling.
+
+## Why Choose GDSentry?
+
+**Comprehensive Game Testing**: Unlike traditional unit testing frameworks that focus solely on code logic, GDSentry validates the complete player experience including visuals, interactions, physics, and performance.
+
+**Godot-Native Integration**: Built specifically for Godot's scene-based architecture, GDSentry understands game objects, signals, and the Godot development workflow - no adaptation layer needed.
+
+**Multi-Paradigm Testing**: Supports unit testing, visual regression testing, performance benchmarking, integration testing, and UI validation all within a single framework.
+
+**CI/CD Ready**: Full headless testing support makes GDSentry perfect for automated testing pipelines, with detailed reporting and artifact generation.
+
+**Extensible Architecture**: Plugin system allows teams to add custom test types, assertions, and validation logic tailored to their specific game requirements.
+
+**Rich Developer Experience**: Intuitive APIs, comprehensive documentation, and practical examples reduce the learning curve while maximizing testing effectiveness.
+
+## Documentation & Resources
+
+- **[📖 Full Documentation](docs/build/html/index.html)** - Complete guides, API reference, and tutorials
+- **[🔧 API Reference](docs/build/html/api-reference.html)** - Detailed API documentation
+- **[💡 Examples](docs/build/html/examples.html)** - Practical examples and use cases
+- **[🚀 Getting Started](docs/build/html/getting-started.html)** - Step-by-step setup guide
 
 ## Core Capabilities
 
@@ -74,9 +103,9 @@ GDSentry provides familiar testing patterns adapted for Godot's unique architect
 
 Traditional unit testing validates core game logic and calculations. Developers create test instances of game objects, set up specific scenarios, and verify that calculations and state changes occur as expected.
 
-```c++
+```gdscript
 # Basic unit test
-extends GDSentry.SceneTreeTest
+extends SceneTreeTest
 
 func run_test_suite() -> void:
     run_test("test_calculator_addition", func(): return test_calculator_addition())
@@ -91,9 +120,9 @@ func test_calculator_addition() -> bool:
 
 Visual testing ensures that what players see matches design intentions. GDSentry enables verification of UI element positioning, visibility states, and layout consistency across different screen configurations.
 
-```c++
+```gdscript
 # Visual test
-extends GDSentry.Node2DTest
+extends Node2DTest
 
 func run_test_suite() -> void:
     run_test("test_ui_layout", func(): return test_ui_layout())
@@ -109,12 +138,23 @@ func test_ui_layout() -> bool:
 
 Event simulation enables testing of user interactions and system responses. Developers can simulate mouse clicks, keyboard input, and other user actions to validate that the game responds appropriately.
 
-```c++
+```gdscript
 # Interactive test
-extends GDSentry.Node2DTest
+extends Node2DTest
 
 func run_test_suite() -> void:
     run_test("test_button_interaction", func(): return test_button_interaction())
+
+func test_button_interaction() -> bool:
+    var button = Button.new()
+    button.text = "Click me"
+    add_child(button)
+
+    # Simulate a button click
+    simulate_click(button)
+
+    # Verify button responded to interaction
+    return assert_equals(button.text, "Clicked!")
 ```
 
 ### Performance and Load Testing
@@ -123,7 +163,7 @@ GDSentry provides comprehensive performance testing capabilities including stres
 
 ```gdscript
 # Performance test with load testing
-extends GDSentry.PerformanceTest
+extends PerformanceTest
 
 func run_test_suite() -> void:
     run_test("test_game_performance_under_load", func(): return await test_game_performance_under_load())
@@ -157,13 +197,10 @@ func test_game_performance_under_load() -> bool:
 cp -r gdsentry/ your-project/
 
 # Run tests
-./gdsentry/run_examples.sh
-
-# Run with advanced options
-godot --script gdsentry/core/test_runner.gd --discover --verbose
+godot --headless --script gdsentry/core/test_runner.gd --discover --verbose
 
 # Run GDSentry self-tests
-./gdsentry/gdsentry-self-test/gdsentry-self-test.sh
+./gdsentry-self-test/gdsentry-self-test.sh
 ```
 
 ### Test Organization
@@ -179,53 +216,65 @@ your_project/
 └── scripts/          # Your game scripts
 ```
 
-## Technical Architecture
+## Compatibility
 
-GDSentry's architecture reflects its comprehensive approach to game testing. The framework organizes functionality into logical modules that work together to provide complete testing coverage.
+### Godot Engine Support
 
-### Core Framework Components
+| Godot Version | Support Level | Notes |
+|---------------|---------------|-------|
+| 4.2.x         | ✅ Full       | Complete support for all features |
+| 4.1.x         | ✅ Full       | Complete support for all features |
+| 4.0.x         | ⚠️ Limited   | Basic testing works, some features may have issues |
+| 3.5.x         | ⚠️ Limited   | Basic testing works, visual/UI tests limited |
+| 3.4.x and earlier | ❌ Unsupported | Not compatible |
 
-The core module contains fundamental testing infrastructure that other modules build upon. This includes base test execution, result collection, and framework initialization logic.
+### Platform Support
 
-### Base Test Classes
+- **Desktop**: Windows, macOS, Linux ✅
+- **Mobile**: Android, iOS ✅
+- **Web**: HTML5 ✅
+- **Console**: Export testing only ⚠️
 
-Abstract base classes define common testing patterns and interfaces. These classes establish the foundation for different test types while ensuring consistent behavior across the framework.
+### Testing Environment
 
-### Assertion Libraries
+- **Headless Mode**: ✅ Fully supported (recommended for CI/CD)
+- **Editor Mode**: ✅ Supported (for development)
+- **Runtime Mode**: ⚠️ Limited (exported games)
 
-Custom assertion methods extend beyond basic equality checks to support game-specific validation needs. These assertions handle visual comparisons, physics validation, and performance verification.
+### Requirements
 
-### Result Reporting
+- **Godot 4.x** (recommended) or **Godot 3.5+** (limited support)
+- **Memory**: 256MB minimum available RAM
+- **Storage**: 50MB for framework files
 
-Comprehensive reporting capabilities provide detailed test results in multiple formats. Developers can integrate results with CI/CD pipelines, generate documentation, or analyze test trends over time.
+## Features
 
-### Utility Functions
+- **🎯 Comprehensive Testing**: Unit, integration, performance, visual, and UI testing in one framework
+- **🔧 Godot Native**: Built specifically for Godot's scene-based architecture
+- **⚡ Headless Support**: Perfect for CI/CD pipelines and automated testing
+- **📊 Rich Reporting**: Multiple output formats (HTML, JUnit, JSON) with detailed results
+- **🔌 Extensible**: Plugin system for custom test types and assertions
+- **📖 Well Documented**: Complete documentation with examples and tutorials
+- **🚀 Performance**: Minimal overhead, supports performance benchmarking
+- **🎮 Multi-Platform**: Works across desktop, mobile, and web platforms
 
-Helper utilities simplify common testing tasks and reduce boilerplate code. These utilities handle scene loading, node finding, and other repetitive testing operations.
+## Contributing
 
-### Specialized Test Types
+We welcome contributions to GDSentry! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
 
-Domain-specific test classes address particular testing needs within game development. Each test type provides specialized methods and assertions for its target domain.
+## Community and Support
 
-### Example Projects
+- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Our community guidelines
+- **[Security Policy](SECURITY.md)** - How to report security vulnerabilities
+- **[License](LICENSE)** - MIT License with attribution requirements
+- **[Changelog](CHANGELOG.md)** - Version history and changes
 
-Practical examples demonstrate GDSentry usage across different scenarios. These examples serve as starting points for developers learning the framework and reference implementations for common testing patterns.
+## Links
 
-### Documentation Resources
-
-Comprehensive documentation supports effective framework usage. Guides, API references, and best practices help developers maximize GDSentry's capabilities within their projects.
-
-```zsh
-gdsentry/
-├── core/                    # Core framework components
-├── base_classes/           # Abstract test base classes
-├── assertions/            # Custom assertion libraries
-├── reporters/             # Test result reporting
-├── utilities/             # Helper utilities
-├── test_types/            # Specialized test types
-├── examples/              # Example tests and projects
-└── docs/                  # Documentation
-```
+- **Documentation**: [Full Documentation](docs/build/html/index.html) (when built)
+- **Repository**: <https://github.com/tuomas-maenpaa/gdsentry>
+- **Issues**: <https://github.com/tuomas-maenpaa/gdsentry/issues>
+- **Discussions**: <https://github.com/tuomas-maenpaa/gdsentry/discussions>
 
 ---
 

@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        godot-version: ["3.5-stable", "4.2.2-stable"]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Godot
+      run: |
+        # Download and setup Godot based on version
+        GODOT_VERSION="${{ matrix.godot-version }}"
+
+        # Determine platform identifier based on version
+        if [[ "$GODOT_VERSION" == "3.5-stable" ]]; then
+          PLATFORM="x11.64"
+        elif [[ "$GODOT_VERSION" == *"4."* ]]; then
+          PLATFORM="linux.x86_64"
+        else
+          echo "Unsupported Godot version: $GODOT_VERSION"
+          exit 1
+        fi
+
+        GODOT_URL="https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_$PLATFORM.zip"
+        GODOT_DIR="Godot_v${GODOT_VERSION}_$PLATFORM"
+
+        echo "Downloading Godot ${{ matrix.godot-version }}..."
+        curl -L -o godot.zip "$GODOT_URL" || exit 1
+        echo "Unzipping Godot..."
+        unzip -l godot.zip | head -5
+        unzip godot.zip || exit 1
+        echo "Contents of directory after unzip:"
+        ls -la | grep Godot || echo "No Godot directory found"
+        chmod +x "$GODOT_DIR" || exit 1
+        
+        # Create a symlink named 'godot' to make it available in PATH
+        ln -s "$PWD/$GODOT_DIR" "$PWD/godot" || exit 1
+        echo "$PWD" >> $GITHUB_PATH
+
+        # Make godot available immediately in this step
+        export PATH="$PWD:$PATH"
+
+        # Verify Godot works
+        godot --version || exit 1
+
+    - name: Run GDSentry Self-Tests
+      run: |
+        # Ensure godot is in PATH from previous step
+        export PATH="$PWD:$PATH"
+
+        echo "Current directory: $PWD"
+        echo "Godot symlink exists: $(ls -la $PWD/godot 2>/dev/null || echo 'NOT FOUND')"
+        echo "Current PATH: $PATH"
+
+        chmod +x ./gdsentry-self-test/gdsentry-self-test.sh
+        # Add debugging output
+        echo "Current directory: $(pwd)"
+        echo "Godot version: $(godot --version 2>/dev/null || echo 'Godot command failed')"
+        echo "Available memory: $(free -h || echo 'free command not available')"
+        echo "Disk space: $(df -h . | tail -1)"
+        echo "Running self-tests..."
+        ./gdsentry-self-test/gdsentry-self-test.sh --quiet
+
+    - name: Run Headless Tests (Godot 4.x only)
+      if: startsWith(matrix.godot-version, '4.')
+      run: |
+        # Ensure godot is in PATH from previous step
+        export PATH="$PWD:$PATH"
+
+        echo "Current directory: $PWD"
+        echo "Godot symlink exists: $(ls -la $PWD/godot 2>/dev/null || echo 'NOT FOUND')"
+
+        echo "Running headless tests..."
+        godot --headless --script gdsentry/core/test_runner.gd --help
+        timeout 1800 godot --headless --script gdsentry/core/test_runner.gd --discover --verbose
+
+    - name: Archive test reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-reports-godot-${{ matrix.godot-version }}
+        path: |
+          reports/
+          *.xml
+          *.html
+
+  docs:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup conda environment
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        environment-file: docs/environment.yml
+        activate-environment: gdsentry-docs
+
+    - name: Build documentation
+      run: |
+        conda run -n gdsentry-docs make -C docs html
+
+    - name: Check for broken links
+      run: |
+        conda run -n gdsentry-docs make -C docs linkcheck
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build/html
+        cname: false

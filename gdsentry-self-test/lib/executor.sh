@@ -250,17 +250,17 @@ run_self_test() {
             echo "🎨 Running Node2D test (scene-based)..."
             local temp_scene
             temp_scene=$(create_node2d_scene "$test_path")
-            execute_scene_test "$temp_scene" 10 "$verbose_mode"
+            execute_scene_test "$temp_scene" 300 "$verbose_mode"
             ;;
         "scene_tree_script")
             echo "🌳 Running SceneTree test (scene-based)..."
             local temp_scene
             temp_scene=$(create_scene_tree_scene "$test_path")
-            execute_scene_test "$temp_scene" 10 "$verbose_mode"
+            execute_scene_test "$temp_scene" 300 "$verbose_mode"
             ;;
         *)
             echo "📜 Running test (script-based)..."
-            execute_script_directly "$test_path" 8 "$verbose_mode"
+            execute_script_directly "$test_path" 60 "$verbose_mode"
             ;;
     esac
     

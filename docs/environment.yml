@@ -5,6 +5,7 @@ channels:
 dependencies:
   # Core Python
   - python=3.12
+  - pip  # Required for pip-installed dependencies
 
   # Sphinx and documentation
   - sphinx>=7.0
