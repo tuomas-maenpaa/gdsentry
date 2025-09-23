@@ -588,13 +588,14 @@ class TestConfig:
 
 	func load_from_file(file_path: String) -> bool:
 		"""Load configuration from a JSON file"""
-		var file = FileAccess.open(file_path, FileAccess.READ)
+		var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+		var file = FileSystemCompatibility.open_file(file_path, FileSystemCompatibility.READ)
 		if not file:
 			push_error("TestConfig: Cannot open config file: %s" % file_path)
 			return false
 
-		var json_text = file.get_as_text()
-		file.close()
+		var json_text = FileSystemCompatibility.get_file_as_text(file)
+		FileSystemCompatibility.close_file(file)
 
 		var json = JSON.new()
 		var parse_result = json.parse(json_text)
@@ -686,13 +687,14 @@ class TestConfig:
 		"""Save current configuration to a file"""
 		var json_text = JSON.stringify(config_data, "\t")
 
-		var file = FileAccess.open(file_path, FileAccess.WRITE)
+		var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+		var file = FileSystemCompatibility.open_file(file_path, FileSystemCompatibility.WRITE)
 		if not file:
 			push_error("TestConfig: Cannot write to config file: %s" % file_path)
 			return false
 
-		file.store_string(json_text)
-		file.close()
+		FileSystemCompatibility.store_string(file, json_text)
+		FileSystemCompatibility.close_file(file)
 
 		if not config_files.has(file_path):
 			config_files.append(file_path)
@@ -785,8 +787,9 @@ func _load_test_configuration() -> void:
 		"user://test_config.json"
 	]
 
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
 	for path in config_paths:
-		if FileAccess.file_exists(path):
+		if FileSystemCompatibility.file_exists(path):
 			if _test_config.load_from_file(path):
 				print("GDTest: Loaded configuration from %s" % path)
 				break
@@ -881,20 +884,21 @@ func _generate_test_report() -> void:
 
 	match report_format:
 		"json":
-			var report_path = report_dir + "test_report_%s.json" % Time.get_unix_time_from_system()
-			var file = FileAccess.open(report_path, FileAccess.WRITE)
-			if file:
-				file.store_string(JSON.stringify(report_data, "\t"))
-				file.close()
+		var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+		var report_path = report_dir + "test_report_%s.json" % Time.get_unix_time_from_system()
+		var file = FileSystemCompatibility.open_file(report_path, FileSystemCompatibility.WRITE)
+		if file:
+			FileSystemCompatibility.store_string(file, JSON.stringify(report_data, "\t"))
+				FileSystemCompatibility.close_file(file)
 				if is_verbose_logging_enabled():
 					print("GDTest: Generated JSON report at %s" % report_path)
 
 		"text":
-			var report_path = report_dir + "test_report_%s.txt" % Time.get_unix_time_from_system()
-			var file = FileAccess.open(report_path, FileAccess.WRITE)
-			if file:
-				file.store_string(get_config_summary())
-				file.close()
+		var report_path = report_dir + "test_report_%s.txt" % Time.get_unix_time_from_system()
+		var file = FileSystemCompatibility.open_file(report_path, FileSystemCompatibility.WRITE)
+		if file:
+			FileSystemCompatibility.store_string(file, get_config_summary())
+				FileSystemCompatibility.close_file(file)
 				if is_verbose_logging_enabled():
 					print("GDTest: Generated text report at %s" % report_path)
 

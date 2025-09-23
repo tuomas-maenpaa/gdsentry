@@ -122,11 +122,11 @@ func _apply_configuration(config: Dictionary) -> void:
 # ------------------------------------------------------------------------------
 # UTILITY METHODS
 # ------------------------------------------------------------------------------
+var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+
 func _ensure_output_directory() -> void:
 	"""Ensure the output directory exists"""
-	var dir = DirAccess.open("res://")
-	if dir:
-		var dir_path = output_directory
+	var dir_path = output_directory
 
 		# Handle res:// paths
 		if dir_path.begins_with("res://"):
@@ -138,8 +138,8 @@ func _ensure_output_directory() -> void:
 				var current_dir = dir_access.get_current_dir()
 				dir_path = current_dir.path_join(dir_path).simplify_path()
 
-		if not DirAccess.dir_exists_absolute(dir_path):
-			var result = DirAccess.make_dir_recursive_absolute(dir_path)
+		if not FileSystemCompatibility.dir_exists(dir_path):
+			var result = FileSystemCompatibility.make_dir_recursive(dir_path)
 			if result != OK:
 				push_warning("TestReporter: Failed to create output directory: " + output_directory)
 
@@ -226,7 +226,7 @@ func validate_output_path(output_path: String) -> bool:
 
 	# Check if directory exists
 	var dir_path = output_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(dir_path)):
+	if not FileSystemCompatibility.dir_exists(ProjectSettings.globalize_path(dir_path)):
 		push_error("TestReporter: Output directory does not exist: " + dir_path)
 		return false
 
@@ -263,12 +263,12 @@ func handle_generation_error(error_message: String, output_path: String) -> void
 
 	# Try to write error information to a fallback file
 	var error_file = output_path.get_basename() + "_error.log"
-	var file = FileAccess.open(error_file, FileAccess.WRITE)
+	var file = FileSystemCompatibility.open_file(error_file, FileSystemCompatibility.WRITE)
 	if file:
-		file.store_string("Report generation failed at: " + format_timestamp(Time.get_unix_time_from_system()) + "\n")
-		file.store_string("Error: " + error_message + "\n")
-		file.store_string("Output path: " + output_path + "\n")
-		file.close()
+		FileSystemCompatibility.store_string(file, "Report generation failed at: " + format_timestamp(Time.get_unix_time_from_system()) + "\n")
+		FileSystemCompatibility.store_string(file, "Error: " + error_message + "\n")
+		FileSystemCompatibility.store_string(file, "Output path: " + output_path + "\n")
+		FileSystemCompatibility.close_file(file)
 		print("TestReporter: Error details written to: " + error_file)
 	else:
 		print("TestReporter: Failed to write error log")

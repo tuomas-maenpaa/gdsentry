@@ -55,13 +55,14 @@ func generate_report(test_suite, output_path: String) -> void:
 
 	var html_content = _generate_html_content(test_suite)
 
-	var file = FileAccess.open(output_path, FileAccess.WRITE)
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var file = FileSystemCompatibility.open_file(output_path, FileSystemCompatibility.WRITE)
 	if not file:
 		handle_generation_error("Failed to open output file", output_path)
 		return
 
-	file.store_string(html_content)
-	file.close()
+	FileSystemCompatibility.store_string(file, html_content)
+	FileSystemCompatibility.close_file(file)
 
 	print("HTMLReporter: HTML report saved to: ", output_path)
 
@@ -101,13 +102,14 @@ func _generate_html_content(test_suite: ) -> String:
 
 func _load_html_template() -> String:
 	"""Load the HTML template file"""
-	var file = FileAccess.open(HTML_TEMPLATE_PATH, FileAccess.READ)
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var file = FileSystemCompatibility.open_file(HTML_TEMPLATE_PATH, FileSystemCompatibility.READ)
 	if not file:
 		push_error("HTMLReporter: Could not open HTML template: " + HTML_TEMPLATE_PATH)
 		return ""
 
-	var content = file.get_as_text()
-	file.close()
+	var content = FileSystemCompatibility.get_file_as_text(file)
+	FileSystemCompatibility.close_file(file)
 	return content
 
 func _replace_summary_placeholders(template: String, test_suite: ) -> String:

@@ -41,6 +41,11 @@ func _load_test_classes() -> void:
 		HTMLReporter = load("res://reporters/formats/html_reporter.gd")
 
 # ------------------------------------------------------------------------------
+# DEPENDENCIES
+# ------------------------------------------------------------------------------
+var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+
+# ------------------------------------------------------------------------------
 # TEST METADATA
 # ------------------------------------------------------------------------------
 func _ready() -> void:
@@ -58,8 +63,8 @@ func _cleanup_test_resources() -> void:
 	]
 
 	for temp_file in temp_files:
-		if FileAccess.file_exists(temp_file):
-			DirAccess.remove_absolute(temp_file)
+		if FileSystemCompatibility.file_exists(temp_file):
+			FileSystemCompatibility.remove_file(temp_file)
 
 # ------------------------------------------------------------------------------
 # TEST DATA
@@ -238,15 +243,15 @@ func test_junit_report_generation() -> bool:
 	reporter.generate_report(test_suite, temp_path)
 
 	# Check if file was created
-	var file_exists = FileAccess.file_exists(temp_path)
+	var file_exists = FileSystemCompatibility.file_exists(temp_path)
 	assert_true(file_exists, "JUnit report file should be created")
 
 	if file_exists:
 		# Check file contents
-		var file = FileAccess.open(temp_path, FileAccess.READ)
+		var file = FileSystemCompatibility.open_file(temp_path, FileSystemCompatibility.READ)
 		if file:
-			var content = file.get_as_text()
-			file.close()
+			var content = FileSystemCompatibility.get_file_as_text(file)
+			FileSystemCompatibility.close_file(file)
 
 			# Check for expected XML structure
 			assert_true(content.find('<testsuites>') != -1, "Should contain testsuites element")
@@ -254,8 +259,8 @@ func test_junit_report_generation() -> bool:
 			assert_true(content.find('<testcase') != -1, "Should contain testcase elements")
 			assert_true(content.find('test_calculator_addition') != -1, "Should contain test name")
 
-			# Clean up
-			DirAccess.remove_absolute(temp_path)
+		# Clean up
+		_remove_file(temp_path)
 
 	# Clean up reporter
 	if reporter and is_instance_valid(reporter):
@@ -274,15 +279,15 @@ func test_json_report_generation() -> bool:
 	reporter.generate_report(test_suite, temp_path)
 
 	# Check if file was created
-	var file_exists = FileAccess.file_exists(temp_path)
+	var file_exists = FileSystemCompatibility.file_exists(temp_path)
 	assert_true(file_exists, "JSON report file should be created")
 
 	if file_exists:
 		# Check file contents
-		var file = FileAccess.open(temp_path, FileAccess.READ)
+		var file = FileSystemCompatibility.open_file(temp_path, FileSystemCompatibility.READ)
 		if file:
-			var content = file.get_as_text()
-			file.close()
+			var content = FileSystemCompatibility.get_file_as_text(file)
+			FileSystemCompatibility.close_file(file)
 
 			# Parse JSON to verify structure
 			var json = JSON.new()
@@ -301,8 +306,8 @@ func test_json_report_generation() -> bool:
 			assert_true(summary.failed_tests == 1, "Should have correct failed tests")
 			assert_true(summary.error_tests == 1, "Should have correct error tests")
 
-			# Clean up
-			DirAccess.remove_absolute(temp_path)
+		# Clean up
+		_remove_file(temp_path)
 
 	# Clean up reporter
 	if reporter and is_instance_valid(reporter):
@@ -321,15 +326,15 @@ func test_html_report_generation() -> bool:
 	reporter.generate_report(test_suite, temp_path)
 
 	# Check if file was created
-	var file_exists = FileAccess.file_exists(temp_path)
+	var file_exists = FileSystemCompatibility.file_exists(temp_path)
 	assert_true(file_exists, "HTML report file should be created")
 
 	if file_exists:
 		# Check file contents
-		var file = FileAccess.open(temp_path, FileAccess.READ)
+		var file = FileSystemCompatibility.open_file(temp_path, FileSystemCompatibility.READ)
 		if file:
-			var content = file.get_as_text()
-			file.close()
+			var content = FileSystemCompatibility.get_file_as_text(file)
+			FileSystemCompatibility.close_file(file)
 
 			# Check for expected HTML structure
 			assert_true(content.find('<!DOCTYPE html>') != -1, "Should be valid HTML")
@@ -337,8 +342,8 @@ func test_html_report_generation() -> bool:
 			assert_true(content.find('test_calculator_addition') != -1, "Should contain test names")
 			assert_true(content.find('Total Tests') != -1, "Should contain summary information")
 
-			# Clean up
-			DirAccess.remove_absolute(temp_path)
+		# Clean up
+		_remove_file(temp_path)
 
 	# Clean up reporter
 	if reporter and is_instance_valid(reporter):

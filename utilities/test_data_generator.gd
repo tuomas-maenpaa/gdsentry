@@ -372,13 +372,14 @@ func export_to_json(data, file_path: String) -> bool:
 	"""Export generated data to JSON file"""
 	var json_string = JSON.stringify(data, "\t")
 
-	var file = FileAccess.open(file_path, FileAccess.WRITE)
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var file = FileSystemCompatibility.open_file(file_path, FileSystemCompatibility.WRITE)
 	if not file:
 		push_error("TestDataGenerator: Failed to open file for writing: %s" % file_path)
 		return false
 
-	file.store_string(json_string)
-	file.close()
+	FileSystemCompatibility.store_string(file, json_string)
+	FileSystemCompatibility.close_file(file)
 
 	print("TestDataGenerator: Exported data to %s (%d bytes)" % [file_path, json_string.length()])
 	return true

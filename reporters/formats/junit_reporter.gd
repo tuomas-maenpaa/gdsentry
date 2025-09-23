@@ -54,13 +54,14 @@ func generate_report(test_suite, output_path: String) -> void:
 
 	var xml_content = _generate_xml_content(test_suite)
 
-	var file = FileAccess.open(output_path, FileAccess.WRITE)
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var file = FileSystemCompatibility.open_file(output_path, FileSystemCompatibility.WRITE)
 	if not file:
 		handle_generation_error("Failed to open output file", output_path)
 		return
 
-	file.store_string(xml_content)
-	file.close()
+	FileSystemCompatibility.store_string(file, xml_content)
+	FileSystemCompatibility.close_file(file)
 
 	print("JUnitReporter: XML report saved to: ", output_path)
 

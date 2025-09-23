@@ -1060,12 +1060,13 @@ func _determine_test_category(script_path: String) -> String:
 
 func _is_test_script(script_path: String) -> bool:
 	"""Check if a script is a test script by examining its content"""
-	var file = FileAccess.open(script_path, FileAccess.READ)
+	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var file = FileSystemCompatibility.open_file(script_path, FileSystemCompatibility.READ)
 	if not file:
 		return false
 
-	var content = file.get_as_text()
-	file.close()
+	var content = FileSystemCompatibility.get_file_as_text(file)
+	FileSystemCompatibility.close_file(file)
 
 	# Check for test base class inheritance
 	var test_base_classes = [

@@ -77,8 +77,9 @@ func setup_recording_directories() -> void:
 
 	for dir_path in dirs:
 		var global_path = ProjectSettings.globalize_path(dir_path)
-		if not DirAccess.dir_exists_absolute(global_path):
-			var error = DirAccess.make_dir_recursive_absolute(global_path)
+		var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+		if not FileSystemCompatibility.dir_exists(global_path):
+			var error = FileSystemCompatibility.make_dir_recursive(global_path)
 			if error != OK:
 				push_warning("Failed to create video recording directory: " + dir_path)
 
@@ -561,10 +562,10 @@ func save_as_png_sequence() -> bool:
 	var base_path = output_directory + recording_metadata.test_name + "/"
 	var global_base_path = ProjectSettings.globalize_path(base_path)
 
-	if not DirAccess.dir_exists_absolute(global_base_path):
-		var error = DirAccess.make_dir_recursive_absolute(global_base_path)
-		if error != OK:
-			return false
+		if not FileSystemCompatibility.dir_exists(global_base_path):
+			var error = FileSystemCompatibility.make_dir_recursive(global_base_path)
+			if error != OK:
+				return false
 
 	for i in range(recorded_frames.size()):
 		var frame = recorded_frames[i]
@@ -576,11 +577,11 @@ func save_as_png_sequence() -> bool:
 			frame.image.save_png(global_path)
 		else:
 			# Save uncompressed
-			var file = FileAccess.open(global_path, FileAccess.WRITE)
+			var file = FileSystemCompatibility.open_file(global_path, FileSystemCompatibility.WRITE)
 			if file:
 				var png_data = frame.image.save_png_to_buffer()
-				file.store_buffer(png_data)
-				file.close()
+				FileSystemCompatibility.store_string(file, png_data)
+				FileSystemCompatibility.close_file(file)
 
 	return true
 
@@ -599,10 +600,10 @@ func save_recording_metadata() -> bool:
 	var metadata_path = "res://video_metadata/" + recording_metadata.test_name + ".json"
 	var global_path = ProjectSettings.globalize_path(metadata_path)
 
-	var file = FileAccess.open(global_path, FileAccess.WRITE)
+	var file = FileSystemCompatibility.open_file(global_path, FileSystemCompatibility.WRITE)
 	if file:
-		file.store_string(JSON.stringify(recording_metadata, "\t"))
-		file.close()
+		FileSystemCompatibility.store_string(file, JSON.stringify(recording_metadata, "\t"))
+		FileSystemCompatibility.close_file(file)
 		return true
 
 	return false
@@ -619,10 +620,10 @@ func save_analysis_results() -> bool:
 		"performance_data": performance_during_recording
 	}
 
-	var file = FileAccess.open(global_path, FileAccess.WRITE)
+	var file = FileSystemCompatibility.open_file(global_path, FileSystemCompatibility.WRITE)
 	if file:
-		file.store_string(JSON.stringify(analysis_data, "\t"))
-		file.close()
+		FileSystemCompatibility.store_string(file, JSON.stringify(analysis_data, "\t"))
+		FileSystemCompatibility.close_file(file)
 		return true
 
 	return false
