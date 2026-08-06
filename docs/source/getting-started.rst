@@ -1,181 +1,125 @@
-Getting Started
-===============
+Getting Started with GDSentry CLI
+==================================
+
+**⏱️ 5-minute quick start** - Get testing your Godot games immediately!
+
+This guide shows Godot developers how to install GDSentry CLI and start testing their games. No complex setup required - just install the CLI and write tests in your existing Godot project.
+
+Prerequisites
+=============
+
+- **Godot 4.x** (recommended) or **Godot 3.5+**
+- **Python 3.9+** installed on your system
+- A **Godot project** you want to test
 
 Installation
 ============
 
-Copy GDSentry to your Godot project:
+Since GDSentry is currently in development, install from source:
 
 .. code-block:: bash
 
-    # Copy GDSentry to your Godot project
-    cp -r gdsentry/ your-project/
+    # Clone the repository
+    git clone https://github.com/your-org/gdsentry.git
+    cd gdsentry
 
-Configure GDSentry Autoload
--------------------------
+    # Set up conda environment (recommended)
+    conda env create -f environment.yml
+    conda activate gdsentry
 
-Set up the GDSentry autoload to enable test discovery and execution:
+    # Install in development mode
+    pip install -e .
 
-1. Open your Godot project
-2. Go to **Project → Project Settings**
-3. Click the **AutoLoad** tab
-4. Click **Add** and configure:
-   - **Path:** ``res://gdsentry/core/test_manager.gd``
-   - **Node Name:** ``GDTestManager``
-5. Check the **Enable** box to activate the autoload
-
-Run tests:
+Verify installation:
 
 .. code-block:: bash
 
-    # Run tests
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/
+    gdsentry --help
 
-    # Run with advanced options
-    godot --script gdsentry/core/test_runner.gd --discover --verbose
+You should see the GDSentry CLI help output with available commands.
 
-    # Run GDSentry self-tests
-    ./gdsentry/gdsentry-self-test/gdsentry-self-test.sh
+Your First Test
+===============
 
-Verify Installation
--------------------
+Let's create your first test. Tests live **in your Godot project** - you don't copy GDSentry into your project.
 
-Create a simple test to confirm GDSentry is working:
+1. **Create a test directory** in your Godot project:
 
-.. code-block:: gdscript
+   .. code-block:: bash
 
-    # res://tests/verification_test.gd
-    extends SceneTreeTest
+       cd your-godot-project
+       mkdir tests
 
-    func run_test_suite() -> void:
-        run_test("test_gdsentry_installation", func(): return test_gdsentry_installation())
+2. **Create your first test file** ``tests/player_test.gd``:
 
-    func test_gdsentry_installation() -> bool:
-        # Verify GDTestManager autoload is available
-        var test_manager = get_node("/root/GDTestManager")
-        return assert_not_null(test_manager, "GDTestManager autoload should be available")
+   .. code-block:: gdscript
 
-Run this test to confirm your setup is working correctly.
+       # tests/player_test.gd
+       extends SceneTreeTest
 
-Troubleshooting
----------------
+       func run_test_suite() -> void:
+           run_test("test_player_health", func(): return test_player_health())
+           run_test("test_player_movement", func(): return test_player_movement())
 
-**GDTestManager autoload not found:**
-- Ensure the autoload path is exactly ``res://gdsentry/core/test_manager.gd``
-- Verify the Node Name is ``GDTestManager`` (case-sensitive)
-- Confirm the autoload is enabled in Project Settings
+       func test_player_health() -> bool:
+           var player = Player.new()  # Your game's Player class
+           player.health = 100
 
-**Tests not discovered:**
-- Check that test files end with ``_test.gd``
-- Ensure test classes extend appropriate base classes (SceneTreeTest, Node2DTest, etc.)
-- Verify the ``run_test_suite()`` function is implemented
+           # Take damage
+           player.take_damage(25)
 
-**Godot errors on startup:**
-- Make sure you've copied the entire ``gdsentry/`` directory
-- Check that all GDSentry script files are present in ``res://gdsentry/``
+           # Verify health decreased
+           return assert_equals(player.health, 75)
 
-Test Organization
-=================
+       func test_player_movement() -> bool:
+           var player = Player.new()
+           player.position = Vector2(0, 0)
 
-Recommended project structure:
+           # Move player
+           player.move(Vector2(10, 5))
+
+           # Verify position changed
+           return assert_equals(player.position, Vector2(10, 5))
+
+3. **Run your tests**:
+
+   .. code-block:: bash
+
+       # From your Godot project directory
+       gdsentry test run
+
+You should see output showing your tests running and passing!
+
+Understanding the Results
+=========================
+
+GDSentry will show you:
+
+- ✅ **Green checkmarks** for passing tests
+- ❌ **Red X marks** for failing tests
+- 📊 **Summary** with pass/fail counts
+- 🕐 **Timing information** for performance insights
+
+Example output:
 
 .. code-block:: text
 
-    your_project/
-    ├── gdsentry/           # GDSentry framework
-    ├── tests/
-    │   ├── unit/         # SceneTreeTest classes
-    │   ├── visual/       # Node2DTest classes
-    │   ├── integration/  # Integration tests
-    │   └── performance/  # Performance tests
-    └── scripts/          # Your game scripts
+    🚀 GDSentry - Running tests...
 
-Basic Testing Patterns
-======================
+    ✅ tests/player_test.gd::test_player_health (0.02s)
+    ✅ tests/player_test.gd::test_player_movement (0.01s)
 
-GDSentry provides familiar testing patterns adapted for Godot's unique architecture. The framework supports multiple testing approaches, each suited to different aspects of game validation.
+    📊 Results: 2 passed, 0 failed (0.03s total)
 
-Traditional Unit Testing
-------------------------
+Next Steps
+==========
 
-Traditional unit testing validates core game logic and calculations. Developers create test instances of game objects, set up specific scenarios, and verify that calculations and state changes occur as expected.
+Now that you have basic testing working:
 
-.. code-block:: gdscript
+1. **Learn test types**: `SceneTreeTest`, `Node2DTest`, `PerformanceTest`, etc.
+2. **Explore assertions**: `assert_equals()`, `assert_true()`, `assert_visible()`, etc.
+3. **Add to CI/CD**: Automate testing in your build pipeline
+4. **Visual testing**: Test UI layouts and rendering
+5. **Performance testing**: Monitor FPS and memory usage
 
-    # Basic unit test
-    extends SceneTreeTest
-
-    func run_test_suite() -> void:
-        run_test("test_calculator_addition", func(): return test_calculator_addition())
-
-    func test_calculator_addition() -> bool:
-        var calc = Calculator.new()
-        var result = calc.add(2, 3)
-        return assert_equals(result, 5)
-
-Visual Testing
---------------
-
-Visual testing ensures that what players see matches design intentions. GDSentry enables verification of UI element positioning, visibility states, and layout consistency across different screen configurations.
-
-.. code-block:: gdscript
-
-    # Visual test
-    extends Node2DTest
-
-    func run_test_suite() -> void:
-        run_test("test_ui_layout", func(): return test_ui_layout())
-
-    func test_ui_layout() -> bool:
-        var menu = load_test_scene("res://scenes/ui/main_menu.tscn")
-        var button = find_nodes_by_type(menu, "Button")[0]
-
-        return assert_visible(button) and assert_position(button, Vector2(100, 100), 5.0)
-
-Interactive Testing
--------------------
-
-Event simulation enables testing of user interactions and system responses. Developers can simulate mouse clicks, keyboard input, and other user actions to validate that the game responds appropriately.
-
-.. code-block:: gdscript
-
-    # Interactive test
-    extends Node2DTest
-
-    func run_test_suite() -> void:
-        run_test("test_button_interaction", func(): return test_button_interaction())
-
-Performance and Load Testing
-----------------------------
-
-GDSentry provides comprehensive performance testing capabilities including stress simulation for load testing scenarios.
-
-.. code-block:: gdscript
-
-    # Performance test with load testing
-    extends PerformanceTest
-
-    func run_test_suite() -> void:
-        run_test("test_game_performance_under_load", func(): return await test_game_performance_under_load())
-
-    func test_game_performance_under_load() -> bool:
-        var success = true
-
-        # Performance assertions would go here
-        # Example: assert_fps_above(30, 1.0)
-        # Example: assert_memory_usage_less_than(200.0)
-
-        return success
-
-.. seealso::
-   :doc:`configuration`
-      Learn how to customize GDSentry behavior with configuration files and profiles.
-
-   :doc:`user-guide`
-      Comprehensive guide to testing patterns and best practices.
-
-   :doc:`examples`
-      Runnable examples demonstrating GDSentry usage patterns.
-
-   :doc:`troubleshooting`
-      Solutions to common setup and configuration issues.
+See the :doc:`user-guide` for detailed tutorials and examples.

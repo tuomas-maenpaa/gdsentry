@@ -1,0 +1,103 @@
+# GDSentry - Pre-commit Hooks Configuration
+# Validates code quality and compatibility before commits
+#
+# This configuration ensures consistent code quality, catches
+# compatibility issues, and validates documentation before
+# changes are committed.
+#
+# Author: GDSentry Framework
+# Version: 1.0.0
+
+repos:
+  # GDScript syntax and compatibility validation
+  - repo: local
+    hooks:
+      - id: gdscript-syntax
+        name: GDScript Syntax Check
+        entry: python3 scripts/validate_gdscript.py
+        language: system
+        files: \.gd$
+        exclude: ^tests/fixtures/|^__pycache__/|\.git/
+
+      - id: compatibility-layer
+        name: Compatibility Layer Check
+        entry: python3 scripts/check_compatibility_usage.py
+        language: system
+        files: \.gd$
+
+      - id: import-validation
+        name: Import Validation
+        entry: python3 scripts/validate_imports.py
+        language: system
+        files: \.gd$
+
+  # RST documentation validation
+  - repo: local
+    hooks:
+      - id: rst-linting
+        name: RST Documentation Check
+        entry: python3 -m docutils.parsers.rst
+        language: system
+        files: \.rst$
+        args: [--strict]
+
+      - id: rst-linkcheck
+        name: RST Link Check
+        entry: python3 scripts/dev/check_rst_links.py
+        language: system
+        files: \.rst$
+
+      - id: docs-validation
+        name: Documentation Validation
+        entry: python3 scripts/validate_docs.py
+        language: system
+        files: \.(rst|gd)$
+        pass_filenames: false
+
+  # Python script validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.godot/
+      - id: end-of-file-fixer
+        exclude: \.godot/
+      - id: check-yaml
+        files: \.(yaml|yml)$
+      - id: check-json
+        files: \.json$
+      - id: check-toml
+        files: \.toml$
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-docstring-first
+
+  # Shell script validation
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+        files: \.sh$
+        args: [--severity=warning]
+
+  # License header check
+  - repo: local
+    hooks:
+      - id: license-header
+        name: License Header Check
+        entry: python3 scripts/check_license_headers.py
+        language: system
+        files: \.(gd|py|sh)$
+        exclude: ^__pycache__/|\.git/
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

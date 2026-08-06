@@ -1,52 +1,85 @@
 User Guide
 ==========
 
-This section provides comprehensive guidance for using GDSentry effectively in your Godot projects.
+This comprehensive guide teaches you how to write effective tests for your Godot projects using GDSentry CLI. Learn test patterns, assertions, organization, and best practices.
 
+.. note::
+   **Prerequisite**: Complete the :doc:`installation` and :doc:`getting-started` guides first.
 
-Test Organization Patterns
-==========================
+Writing Your First Tests
+========================
 
-Effective test organization is crucial for maintaining a robust and scalable test suite. GDSentry provides flexible patterns for structuring your tests that align with Godot's project conventions while supporting different testing approaches.
+Tests in GDSentry are written in GDScript and live in your Godot project. Unlike traditional testing frameworks, GDSentry runs externally using the CLI, so your tests are just regular GDScript files.
+
+Basic Test Structure
+--------------------
+
+Every GDSentry test follows this pattern:
+
+.. code-block:: gdscript
+
+    # tests/test_player.gd
+    extends SceneTreeTest
+
+    func run_test_suite() -> void:
+        run_test("test_player_health", func(): return test_player_health())
+        run_test("test_player_movement", func(): return test_player_movement())
+
+    func test_player_health() -> bool:
+        var player = Player.new()
+        player.take_damage(25)
+        return assert_equals(player.health, 75)
+
+    func test_player_movement() -> bool:
+        var player = Player.new()
+        player.move(Vector2(10, 5))
+        return assert_equals(player.position, Vector2(10, 5))
+
+Key Elements:
+
+1. **Extends a Test Class**: ``SceneTreeTest``, ``Node2DTest``, ``PerformanceTest``, etc.
+2. **run_test_suite() Function**: Registers all test functions
+3. **run_test() Calls**: Each test method with a descriptive name
+4. **Test Methods**: Return ``bool`` indicating pass/fail
+5. **Assertions**: Use ``assert_*()`` functions to validate expectations
+
+Project Organization
+====================
+
+Structure your tests to match your game's architecture:
 
 Directory Structure
 -------------------
 
-GDSentry follows a hierarchical directory structure that separates tests by type and purpose:
-
 .. code-block:: text
 
-    your_project/
-    ├── gdsentry/                    # GDSentry framework
+    your-godot-project/
     ├── tests/
-    │   ├── unit/                  # SceneTreeTest classes - fast unit tests
-    │   │   ├── core/              # Core game logic tests
-    │   │   ├── systems/           # Game systems tests
-    │   │   └── utils/             # Utility function tests
-    │   ├── visual/                # Node2DTest classes - UI/visual tests
-    │   │   ├── ui/                # User interface tests
-    │   │   ├── sprites/           # Sprite and animation tests
-    │   │   └── layouts/           # Layout and positioning tests
-    │   ├── integration/           # IntegrationTest classes
-    │   │   ├── gameplay/          # Full gameplay flow tests
-    │   │   ├── scenes/            # Scene transition tests
-    │   │   └── systems/           # Multi-system integration tests
-    │   ├── performance/           # PerformanceTest classes
-    │   │   ├── benchmarks/        # Performance benchmarks
-    │   │   └── stress/            # Load testing scenarios
-    │   └── physics/               # PhysicsTest classes
-    │       ├── collisions/        # Collision detection tests
-    │       ├── forces/            # Physics force tests
-    │       └── constraints/       # Physics constraint tests
-    └── scripts/
-        ├── core/                  # Core game scripts
-        ├── systems/               # Game systems
-        └── ui/                    # UI components
+    │   ├── unit/              # Fast, isolated logic tests
+    │   │   ├── test_player.gd
+    │   │   ├── test_inventory.gd
+    │   │   └── test_combat.gd
+    │   ├── visual/            # UI and visual component tests
+    │   │   ├── test_main_menu.gd
+    │   │   ├── test_hud.gd
+    │   │   └── test_dialogue.gd
+    │   ├── integration/       # Multi-system interaction tests
+    │   │   ├── test_level_loading.gd
+    │   │   └── test_save_system.gd
+    │   └── performance/       # Performance and load tests
+    │       └── test_frame_rate.gd
+    ├── scripts/
+    │   ├── player.gd
+    │   ├── inventory.gd
+    │   └── ui/
+    └── scenes/
+        ├── main_menu.tscn
+        └── game_world.tscn
 
 Naming Conventions
 ------------------
 
-Consistent naming helps maintain clarity and enables automatic test discovery:
+Follow these patterns for automatic discovery:
 
 **Test Files:**
 - End with ``_test.gd`` (e.g., ``player_controller_test.gd``)
@@ -143,6 +176,113 @@ Use for validating performance requirements and identifying bottlenecks. Critica
 
 PerformanceTest provides specialized assertions for measuring and validating performance metrics.
 
+Assertions and Validation
+=========================
+
+GDSentry provides a rich set of assertion functions to validate your game's behavior. All assertions return ``bool`` and automatically provide descriptive error messages.
+
+Basic Assertions
+----------------
+
+**Equality and Comparison:**
+
+.. code-block:: gdscript
+
+    # Value equality
+    assert_equals(actual_value, expected_value)
+    assert_not_equals(value1, value2)
+
+    # Numeric comparisons
+    assert_greater_than(actual, minimum)
+    assert_less_than(actual, maximum)
+    assert_between(value, min_val, max_val)
+
+    # Floating point (with tolerance)
+    assert_almost_equals(actual, expected, tolerance=0.01)
+
+**Truth and Null Checks:**
+
+.. code-block:: gdscript
+
+    # Boolean assertions
+    assert_true(condition)
+    assert_false(condition)
+
+    # Null/reference checks
+    assert_null(value)
+    assert_not_null(value)
+
+Visual and UI Assertions
+-------------------------
+
+**Node and Scene Validation:**
+
+.. code-block:: gdscript
+
+    # Node existence and visibility
+    assert_visible(node)
+    assert_hidden(node)
+
+    # Position and size validation
+    assert_position(node, expected_position, tolerance=1.0)
+    assert_size(node, expected_size)
+
+    # Node hierarchy
+    assert_has_child(parent, child_name)
+    assert_child_count(node, expected_count)
+
+**String and Text Assertions:**
+
+.. code-block:: gdscript
+
+    # Text content validation
+    assert_text_equals(label, "Expected Text")
+    assert_contains_text(label, "partial text")
+    assert_text_length(label, expected_length)
+
+Performance Assertions
+----------------------
+
+**Timing and FPS:**
+
+.. code-block:: gdscript
+
+    # Frame rate validation
+    assert_fps_above(min_fps, duration=1.0)
+    assert_fps_stable(target_fps, variance=5.0, duration=2.0)
+
+    # Execution time limits
+    assert_execution_time_less_than(func_ref, max_seconds)
+
+**Resource Monitoring:**
+
+.. code-block:: gdscript
+
+    # Memory usage validation
+    assert_memory_usage_less_than(max_mb)
+    assert_memory_growth_less_than(max_growth_mb, duration=5.0)
+
+    # Object counting
+    assert_object_count_less_than(max_objects)
+
+Custom Assertions
+-----------------
+
+Create domain-specific assertions for your game:
+
+.. code-block:: gdscript
+
+    func assert_player_alive(player: Player) -> bool:
+        return assert_true(player.health > 0, "Player should be alive")
+
+    func assert_inventory_contains(player: Player, item_name: String) -> bool:
+        var has_item = player.inventory.has_item(item_name)
+        return assert_true(has_item, "Player should have " + item_name)
+
+    func assert_position_in_bounds(node: Node2D, bounds: Rect2) -> bool:
+        var in_bounds = bounds.has_point(node.position)
+        return assert_true(in_bounds, "Position should be within bounds")
+
 Test Isolation and Dependencies
 -------------------------------
 
@@ -163,6 +303,184 @@ Test Isolation and Dependencies
 - Use data-driven testing for comprehensive coverage
 - Generate random but valid test data
 - Test boundary conditions systematically
+
+Test Discovery and Configuration
+================================
+
+Understanding how GDSentry finds and configures your tests is crucial for organizing large test suites effectively.
+
+Automatic Test Discovery
+------------------------
+
+GDSentry automatically discovers tests using these patterns:
+
+**Directory Scanning:**
+- Searches for ``tests/`` and ``test/`` directories in your project root
+- Recursively scans subdirectories for test files
+- Supports custom directory paths via configuration
+
+**File Pattern Matching:**
+- Finds files ending with ``_test.gd`` (e.g., ``player_test.gd``, ``combat_system_test.gd``)
+- Ignores files that don't follow the naming convention
+- Case-sensitive matching
+
+**Class Detection:**
+- Identifies GDScript classes that extend GDSentry base classes:
+  - ``SceneTreeTest`` - Unit tests
+  - ``Node2DTest`` - Visual/UI tests
+  - ``IntegrationTest`` - System integration tests
+  - ``PerformanceTest`` - Performance benchmarks
+
+**Method Discovery:**
+- Finds all methods starting with ``test_`` in test classes
+- Supports both synchronous and asynchronous test methods
+- Methods must return ``bool`` (pass/fail status)
+
+Configuration Options
+--------------------
+
+Control test discovery and execution through ``gdsentry.toml``:
+
+.. code-block:: toml
+
+    [project]
+    # Test discovery settings
+    test_directories = ["tests/", "test/"]  # Directories to scan
+    godot_version = "4.2.2-stable"          # Target Godot version
+
+    [test]
+    # Execution settings
+    timeout = 30.0         # Seconds per test
+    fail_fast = false      # Stop on first failure
+    parallel = true        # Run tests in parallel
+
+    [discovery]
+    # Advanced discovery options
+    recursive = true       # Scan subdirectories
+    pattern = "*_test.gd"  # File name pattern
+    exclude_patterns = ["temp_*", "backup_*"]  # Files to ignore
+
+Selective Test Execution
+------------------------
+
+Run specific subsets of your tests:
+
+**By Category:**
+.. code-block:: bash
+
+    gdsentry test run --category unit      # Only unit tests
+    gdsentry test run --category visual    # Only UI/visual tests
+    gdsentry test run --category integration  # Only integration tests
+
+**By File:**
+.. code-block:: bash
+
+    gdsentry test run --file tests/unit/player_test.gd
+    gdsentry test run --dir tests/unit/     # All tests in directory
+
+**By Pattern:**
+.. code-block:: bash
+
+    gdsentry test run --filter "*player*"  # Tests containing "player"
+    gdsentry test run --filter "test_movement"  # Specific test method
+
+**Quick Checks:**
+.. code-block:: bash
+
+    gdsentry test quick     # Fast smoke test (framework tests)
+    gdsentry test discover  # Show all discoverable tests without running
+
+Cross-Platform Testing
+----------------------
+
+Test across different architectures from a single machine:
+
+**Architecture-Specific Testing:**
+.. code-block:: bash
+
+    gdsentry test run --arch x86_64  # Test x86_64 compatibility
+    gdsentry test run --arch arm64   # Test ARM64 performance
+    gdsentry test run --all-architectures  # Test all supported architectures
+
+**Container Requirements:**
+- Uses Podman/Docker for cross-architecture execution
+- Requires architecture-specific container images
+- Automatic fallback to native architecture if containers unavailable
+
+Configuration File Locations
+----------------------------
+
+GDSentry looks for configuration in order of priority:
+
+1. ``gdsentry.toml`` (project root) - Recommended for project-specific settings
+2. ``.gdsentry.toml`` (project root) - Alternative naming
+3. Environment variables (``GDSENTRY_*``) - For CI/CD overrides
+4. Built-in defaults - Sensible fallbacks
+
+**Example Configuration File:**
+
+.. code-block:: toml
+
+    [project]
+    name = "My Game"
+    godot_version = "4.2.2-stable"
+    test_directories = ["tests/", "integration/"]
+
+    [test]
+    timeout = 45.0
+    fail_fast = true
+    parallel = true
+
+    [report]
+    formats = ["console", "html", "junit"]
+    output_dir = "test-reports"
+
+    [container]
+    base_image = "gdsentry-base"
+    architecture = "x86_64"
+
+Environment Variable Overrides
+------------------------------
+
+Override configuration with environment variables:
+
+.. code-block:: bash
+
+    # Execution settings
+    export GDSENTRY_TEST_TIMEOUT=60
+    export GDSENTRY_FAIL_FAST=true
+
+    # Project settings
+    export GDSENTRY_PROJECT_GODOT_VERSION="4.2.1-stable"
+    export GDSENTRY_TEST_DIRECTORIES="tests/,custom_tests/"
+
+    # Run with overrides
+    gdsentry test run
+
+Common Discovery Issues
+-----------------------
+
+**Tests Not Found:**
+- Ensure test files end with ``_test.gd``
+- Check that test classes extend GDSentry base classes
+- Verify test directories are named ``tests/`` or configured in ``gdsentry.toml``
+- Use ``gdsentry test discover`` to see what tests are found
+
+**Wrong Test Categories:**
+- Check which base class your tests extend
+- SceneTreeTest → unit category
+- Node2DTest → visual category
+- IntegrationTest → integration category
+
+**Configuration Not Applied:**
+- Ensure ``gdsentry.toml`` is in project root
+- Check file syntax (valid TOML)
+- Use environment variables for testing overrides
+
+**Cross-Architecture Issues:**
+- Ensure Podman/Docker is installed and running
+- Build required container images: ``gdsentry build all``
+- Check that target architecture is supported
 
 Writing Maintainable Tests
 --------------------------
@@ -185,385 +503,198 @@ Writing Maintainable Tests
 - Explain the purpose of parametrized tests
 - Maintain up-to-date test documentation
 
-Integration with Godot Development Workflow
-===========================================
+Godot Editor Integration and Workflow
+=====================================
 
-GDSentry integrates seamlessly with Godot's development environment, enhancing your workflow with automated testing capabilities while maintaining compatibility with Godot's tools and practices.
+GDSentry CLI integrates smoothly with your Godot development workflow. Run tests from your terminal, get results in your editor, and iterate quickly on game features.
 
-IDE Integration and Setup
--------------------------
+Terminal-Based Testing Workflow
+-------------------------------
 
-**Godot Editor Integration:**
-- Tests run within the Godot environment, ensuring compatibility
-- Access to Godot's debugging tools and inspector
-- Visual debugging of scene-based tests
-- Integration with Godot's project management
+**Quick Test Runs:**
+.. code-block:: bash
 
-**External Editor Support:**
-- Compatible with VS Code, Sublime Text, and other editors
-- Command-line test execution for CI/CD pipelines
-- Integration with version control systems
-- Support for automated testing workflows
+    # In your Godot project directory
+    gdsentry test run                    # Run all tests
+    gdsentry test run --category unit    # Run only unit tests
+    gdsentry test run --verbose          # Detailed output
 
-**Test Runner Integration:**
-- Built-in test discovery and execution
-- Configurable test filtering and selection
-- Parallel test execution support
-- Comprehensive reporting and output formats
+**Test Discovery:**
+.. code-block:: bash
 
-Debugging Test Failures
+    gdsentry test discover              # See all available tests
+    gdsentry test discover --dir tests/unit/  # Check specific directory
+
+**Rapid Iteration:**
+.. code-block:: bash
+
+    # Test as you develop
+    gdsentry test quick                 # Fast framework validation
+    gdsentry test run --fail-fast       # Stop on first failure
+
+Editor Integration Tips
 -----------------------
 
-**Visual Debugging:**
-- Scene tree inspection for Node2DTest failures
-- Visual verification of UI layout issues
-- Animation and sprite rendering validation
-- Physics simulation debugging
-
-**Logging and Diagnostics:**
-- Detailed failure messages with context
-- Stack traces for exception locations
-- Performance metrics and timing information
-- Memory usage and leak detection
-
-**Breakpoint Debugging:**
-- Set breakpoints in test methods
-- Debug test setup and teardown
-- Inspect test state and variables
-- Step through complex test scenarios
-
-**Test Output Analysis:**
-- Console output for test progress
-- JUnit XML reports for CI integration
-- HTML reports for detailed analysis
-- JSON output for automated processing
-
-Continuous Integration Setup
-----------------------------
-
-**Automated Test Execution:**
-- Command-line test runner for headless execution
-- Configurable test selection and filtering
-- Parallel test execution for faster builds
-- Integration with popular CI platforms
-
-**Report Generation:**
-- Multiple output formats (console, JUnit, HTML, JSON)
-- Test result archiving and history
-- Performance trend analysis
-- Coverage reporting integration
-
-**Quality Gates:**
-- Configurable failure thresholds
-- Performance regression detection
-- Code quality metric validation
-- Automated deployment gates
-
-Version Control Integration
----------------------------
-
-**Test Organization in Git:**
-- Tests stored alongside source code
-- Branch-specific test configurations
-- Test result tracking and history
-- Merge request quality validation
-
-**Collaborative Development:**
-- Shared test standards and conventions
-- Automated test execution on commits
-- Test result notifications and alerts
-- Team-wide testing best practices
-
-Common Testing Scenarios
-========================
-
-GDSentry provides practical solutions for testing typical game development scenarios. These examples demonstrate how to apply GDSentry's testing patterns to real-world game features.
-
-Player Movement Testing
------------------------
-
-Testing character movement mechanics requires validating position updates, collision detection, and physics interactions:
-
-.. code-block:: gdscript
-
-    extends Node2DTest
-    class_name PlayerMovementTest
-
-    func run_test_suite() -> void:
-        run_test("test_player_walks_right", func(): return test_player_walks_right())
-        run_test("test_player_jumps", func(): return test_player_jumps())
-        run_test("test_player_collision", func(): return test_player_collision())
-
-    func test_player_walks_right() -> bool:
-        var player = create_test_player()
-        var initial_pos = player.position
-
-        # Simulate right movement input
-        simulate_input("move_right", true)
-        await wait_for_frames(10)
-
-        return assert_greater(player.position.x, initial_pos.x, "Player should move right")
-
-    func test_player_jumps() -> bool:
-        var player = create_test_player()
-        player.position = Vector2(100, 400)  # On ground
-
-        # Simulate jump input
-        simulate_input("jump", true)
-        await wait_for_frames(5)
-
-        return assert_less(player.position.y, 400, "Player should move upward when jumping")
-
-    func test_player_collision() -> bool:
-        var player = create_test_player()
-        var wall = create_test_wall(Vector2(200, 300))
-
-        player.position = Vector2(180, 300)
-        simulate_input("move_right", true)
-        await wait_for_frames(15)
-
-        return assert_less_equal(player.position.x, 200, "Player should not pass through wall")
-
-UI Interaction Testing
-----------------------
-
-Testing user interface components involves validating button states, input handling, and visual feedback:
-
-.. code-block:: gdscript
-
-    extends Node2DTest
-    class_name UITest
-
-    func run_test_suite() -> void:
-        run_test("test_button_click_changes_scene", func(): return test_button_click_changes_scene())
-        run_test("test_menu_navigation", func(): return test_menu_navigation())
-
-    func test_button_click_changes_scene() -> bool:
-        var menu = load_test_scene("res://scenes/ui/main_menu.tscn")
-        var play_button = find_nodes_by_type(menu, "Button")[0]
-
-        # Verify initial state
-        assert_visible(play_button)
-        assert_equals(play_button.text, "Play Game")
-
-        # Simulate button click
-        simulate_mouse_click(play_button)
-        await wait_for_frames(5)
-
-        # Verify scene transition occurred
-        var current_scene = get_tree().current_scene
-        return assert_not_null(current_scene, "Scene should have changed after button click")
-
-    func test_menu_navigation() -> bool:
-        var menu = load_test_scene("res://scenes/ui/main_menu.tscn")
-        var settings_button = find_nodes_by_type(menu, "Button")[1]
-
-        # Navigate to settings
-        simulate_mouse_click(settings_button)
-        await wait_for_frames(5)
-
-        # Verify settings panel is visible
-        var settings_panel = find_node_by_name(menu, "SettingsPanel")
-        return assert_visible(settings_panel, "Settings panel should be visible after navigation")
-
-Game State Management Testing
------------------------------
-
-Testing game state transitions and persistence requires validating state changes and data integrity:
-
-.. code-block:: gdscript
-
-    extends SceneTreeTest
-    class_name GameStateTest
-
-    func run_test_suite() -> void:
-        run_test("test_game_state_transitions", func(): return test_game_state_transitions())
-        run_test("test_score_persistence", func(): return test_score_persistence())
-
-    func test_game_state_transitions() -> bool:
-        var game_state = GameState.new()
-
-        # Test initial state
-        assert_equals(game_state.current_state, GameState.State.MENU)
-
-        # Test transition to gameplay
-        game_state.start_game()
-        assert_equals(game_state.current_state, GameState.State.PLAYING)
-
-        # Test pause functionality
-        game_state.pause_game()
-        assert_equals(game_state.current_state, GameState.State.PAUSED)
-
-        # Test resume
-        game_state.resume_game()
-        return assert_equals(game_state.current_state, GameState.State.PLAYING)
-
-    func test_score_persistence() -> bool:
-        var game_state = GameState.new()
-
-        # Set test score
-        game_state.score = 1500
-        game_state.save_game()
-
-        # Create new instance and load
-        var new_game_state = GameState.new()
-        new_game_state.load_game()
-
-        return assert_equals(new_game_state.score, 1500, "Score should persist across game sessions")
-
-Inventory System Testing
-------------------------
-
-Testing inventory mechanics involves validating item management, capacity limits, and item interactions:
-
-.. code-block:: gdscript
-
-    extends SceneTreeTest
-    class_name InventoryTest
-
-    func run_test_suite() -> void:
-        run_test("test_add_item_to_inventory", func(): return test_add_item_to_inventory())
-        run_test("test_inventory_capacity", func(): return test_inventory_capacity())
-        run_test("test_remove_item", func(): return test_remove_item())
-
-    func test_add_item_to_inventory() -> bool:
-        var inventory = Inventory.new()
-        var sword = create_test_item("sword", "weapon")
-
-        var success = inventory.add_item(sword)
-        assert_true(success, "Should successfully add item to inventory")
-
-        return assert_equals(inventory.get_item_count(), 1, "Inventory should contain one item")
-
-    func test_inventory_capacity() -> bool:
-        var inventory = Inventory.new()
-        inventory.max_capacity = 3
-
-        # Fill inventory to capacity
-        for i in range(3):
-            var item = create_test_item("item_" + str(i), "misc")
-            inventory.add_item(item)
-
-        # Try to add one more item
-        var extra_item = create_test_item("extra", "misc")
-        var success = inventory.add_item(extra_item)
-
-        return assert_false(success, "Should not be able to add items beyond capacity")
-
-    func test_remove_item() -> bool:
-        var inventory = Inventory.new()
-        var potion = create_test_item("health_potion", "consumable")
-
-        inventory.add_item(potion)
-        assert_equals(inventory.get_item_count(), 1)
-
-        var removed_item = inventory.remove_item(potion)
-        assert_not_null(removed_item, "Should return the removed item")
-
-        return assert_equals(inventory.get_item_count(), 0, "Inventory should be empty after removal")
-
-Performance Benchmarking
-------------------------
-
-Testing performance-critical code ensures your game maintains acceptable frame rates under various conditions:
-
-.. code-block:: gdscript
-
-    extends PerformanceTest
-    class_name PerformanceBenchmarkTest
-
-    func run_test_suite() -> void:
-        run_test("test_pathfinding_performance", func(): return await test_pathfinding_performance())
-        run_test("test_particle_system_performance", func(): return await test_particle_system_performance())
-
-    func test_pathfinding_performance() -> bool:
-        var pathfinder = Pathfinder.new()
-        var large_map = generate_large_test_map(1000, 1000)
-
-        var success = await assert_benchmark_performance(
-            "pathfinding_large_map",
-            func(): return pathfinder.find_path(large_map, Vector2(0, 0), Vector2(999, 999)),
-            50.0  # Max 50ms per pathfinding operation
-        )
-
-        return success
-
-    func test_particle_system_performance() -> bool:
-        var particle_system = ParticleSystem.new()
-
-        # Test under heavy load
-        for i in range(100):
-            particle_system.emit_particles_at(Vector2(randf() * 1920, randf() * 1080))
-
-        # Verify performance remains acceptable
-        var success = await assert_fps_above(30, 2.0)
-        success = success and await assert_memory_usage_less_than(256.0)
-
-        return success
-
-Save/Load System Testing
-------------------------
-
-Testing persistence systems validates data integrity and backwards compatibility:
-
-.. code-block:: gdscript
-
-    extends SceneTreeTest
-    class_name SaveLoadTest
-
-    func run_test_suite() -> void:
-        run_test("test_save_game_state", func(): return test_save_game_state())
-        run_test("test_load_game_state", func(): return test_load_game_state())
-        run_test("test_corrupted_save_handling", func(): return test_corrupted_save_handling())
-
-    func test_save_game_state() -> bool:
-        var save_system = SaveSystem.new()
-        var game_data = create_complex_game_state()
-
-        var success = save_system.save_game("test_save.dat", game_data)
-        assert_true(success, "Save operation should succeed")
-
-        # Verify file was created
-        var file_exists = FileAccess.file_exists("user://test_save.dat")
-        return assert_true(file_exists, "Save file should exist on disk")
-
-    func test_load_game_state() -> bool:
-        var save_system = SaveSystem.new()
-        var original_data = create_complex_game_state()
-
-        # Save first
-        save_system.save_game("test_save.dat", original_data)
-
-        # Load in new instance
-        var loaded_data = save_system.load_game("test_save.dat")
-        assert_not_null(loaded_data, "Loaded data should not be null")
-
-        # Verify data integrity
-        return assert_equal_deep(loaded_data, original_data, "Loaded data should match saved data")
-
-    func test_corrupted_save_handling() -> bool:
-        var save_system = SaveSystem.new()
-
-        # Create corrupted save file
-        var file = FileAccess.open("user://corrupted_save.dat", FileAccess.WRITE)
-        file.store_string("invalid json data{")
-        file.close()
-
-        # Attempt to load corrupted file
-        var loaded_data = save_system.load_game("corrupted_save.dat")
-
-        # Should handle corruption gracefully (return null or default state)
-        return assert_null(loaded_data, "Corrupted save files should be handled gracefully")
-
-.. seealso::
-   :doc:`examples`
-      Practical code examples for all testing scenarios covered in this guide.
-
-   :doc:`api/test-classes`
-      Detailed API documentation for SceneTreeTest, Node2DTest, and other base classes.
-
-   :doc:`api/assertions`
-      Complete reference for all assertion methods used in the examples above.
-
-   :doc:`troubleshooting`
-      Solutions for common testing issues and debugging strategies.
+**VS Code Integration:**
+
+*Install VS Code extensions for GDScript:*
+- "geequlim.gdscript" - GDScript syntax highlighting
+- "geequlim.gdscript-toolkit" - Enhanced GDScript support
+
+*Add test running tasks to ``.vscode/tasks.json``:*
+.. code-block:: json
+
+    {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Run GDSentry Tests",
+                "type": "shell",
+                "command": "gdsentry",
+                "args": ["test", "run"],
+                "group": "test",
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared"
+                }
+            }
+        ]
+    }
+
+**Keyboard Shortcuts:**
+- Set up F5 or Ctrl+R to run tests
+- Use terminal panel for test output
+- Quick open test files with Ctrl+P
+
+**Test File Navigation:**
+- Use ``gdsentry test discover`` output to find test files
+- Jump between implementation and test files
+- Group test files in dedicated directories
+
+Iterative Development Workflow
+------------------------------
+
+**Test-Driven Development:**
+1. **Write failing test** for new feature
+2. **Implement feature** in Godot editor
+3. **Run tests** to verify implementation
+4. **Refactor** with confidence
+5. **Repeat** for next feature
+
+**Debugging Test Failures:**
+
+**Console Output Analysis:**
+- Look for assertion failure messages
+- Check timing information for performance tests
+- Review error stack traces
+
+**Isolate Failing Tests:**
+.. code-block:: bash
+
+    # Run single failing test
+    gdsentry test run --file tests/unit/player_test.gd
+
+    # Run with detailed output
+    gdsentry test run --verbose --filter "*failing_test*"
+
+**Godot Editor Debugging:**
+- Open your Godot project to inspect scenes
+- Use Godot's debugger for complex test scenarios
+- Check node hierarchies and property values
+- Validate scene loading and resource references
+
+**Visual Test Debugging:**
+- For Node2DTest failures, open scenes in Godot editor
+- Check positioning, visibility, and rendering
+- Use Godot's remote debugger for visual inspection
+- Compare expected vs actual visual states
+
+**Performance Test Analysis:**
+- Review FPS metrics and frame timing
+- Check memory usage reports
+- Identify performance bottlenecks
+- Use Godot's profiler for detailed analysis
+
+Hot-Reloading and Fast Iteration
+---------------------------------
+
+**Watch Mode (if implemented):**
+.. code-block:: bash
+
+    gdsentry test watch                 # Auto-run tests on file changes
+
+**Manual Quick Checks:**
+.. code-block:: bash
+
+    # Fast feedback loop
+    gdsentry test quick                 # < 5 seconds
+    gdsentry test run --category unit   # < 30 seconds
+
+**Selective Testing:**
+.. code-block:: bash
+
+    # Test only what you're working on
+    gdsentry test run --filter "*player*"  # Player-related tests
+    gdsentry test run --dir tests/unit/    # Unit tests only
+
+CI/CD Integration in Development
+---------------------------------
+
+**Pre-commit Testing:**
+.. code-block:: bash
+
+    # Add to your git hooks
+    #!/bin/bash
+    gdsentry test run --fail-fast
+    if [ $? -ne 0 ]; then
+        echo "Tests failed - commit aborted"
+        exit 1
+    fi
+
+**Pull Request Validation:**
+- Run full test suite before pushing
+- Use ``gdsentry test run --all-architectures`` for compatibility
+- Generate reports for review
+
+Version Control Best Practices
+------------------------------
+
+**Test File Organization:**
+- Keep tests in ``tests/`` directory alongside code
+- Use consistent naming: ``feature_test.gd``
+- Commit tests with implementation
+
+**Branch Testing Strategy:**
+- Test on feature branches before merging
+- Use different test scopes per branch type
+- Run comprehensive tests on main/release branches
+
+**Conflict Resolution:**
+- Test after resolving merge conflicts
+- Run full suite after rebasing
+- Use ``gdsentry test run --verbose`` for debugging
+
+Troubleshooting Editor Integration
+-----------------------------------
+
+**Tests Not Running from Editor:**
+- Ensure GDSentry CLI is installed and in PATH
+- Check that you're in the correct project directory
+- Verify Godot project structure (``project.godot`` file)
+
+**Slow Test Execution:**
+- Use ``--category unit`` for fast feedback
+- Run tests in parallel when possible
+- Focus on specific test files during development
+
+**Path Issues:**
+- Always run commands from project root
+- Use relative paths in test files
+- Check working directory in scripts
+
+**Godot Version Conflicts:**
+- Ensure CLI uses same Godot version as your editor
+- Configure ``godot_version`` in ``gdsentry.toml``
+- Test compatibility with ``gdsentry build all``

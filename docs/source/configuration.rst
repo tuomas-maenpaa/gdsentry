@@ -580,6 +580,18 @@ Default report output directory.
    export GDSENTRY_REPORT_PATH="user://reports/"
    godot --script gdsentry/core/test_runner.gd --report html --discover
 
+GDSENTRY_TEST_SCOPE
+------------------
+Controls which tests are executed (framework, project, or both).
+
+.. code-block:: bash
+
+   export GDSENTRY_TEST_SCOPE="framework"  # Framework tests only
+   export GDSENTRY_TEST_SCOPE="project"    # Project tests only (default)
+   export GDSENTRY_TEST_SCOPE="both"       # Both framework and project tests
+
+   godot --script gdsentry/core/test_runner.gd --discover
+
 Configuration Loading Priority
 ==============================
 
@@ -785,3 +797,7 @@ Game-Specific Configuration:
        "physics_fps": 60,
        "collision_tolerance": 0.5
    }
+
+.. seealso::
+   :doc:`internal/implementation/slice-01-config`
+      **For Contributors:** Technical implementation details of the configuration system.

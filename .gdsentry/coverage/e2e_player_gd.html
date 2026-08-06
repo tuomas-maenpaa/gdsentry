@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>player.gd - Coverage</title>
+  <style>
+    body { font-family: 'Courier New', monospace; margin: 20px; background: #f5f5f5; }
+    h1 { font-family: Arial; color: #333; }
+    .line { display: flex; border-bottom: 1px solid #eee; }
+    .line-num { background: #e9ecef; padding: 4px 10px; width: 60px; text-align: right; color: #666; }
+    .hit-count { background: #d1ecf1; padding: 4px 10px; width: 50px; text-align: center; font-weight: bold; }
+    .source { background: white; padding: 4px 10px; flex: 1; white-space: pre; }
+    .hit { background: #d4edda; }
+    .miss { background: #f8d7da; }
+    .hit .hit-count { background: #28a745; color: white; }
+    .miss .hit-count { background: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+  <h1>📄 player.gd</h1>
+  <div class='line hit'>
+    <div class='line-num'>1</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 1: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>2</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 2: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>3</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 3: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>4</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 4: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>5</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 5: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>6</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 6: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>7</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 7: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>8</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 8: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>9</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 9: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>10</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 10: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>11</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 11: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>12</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 12: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>13</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 13: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>14</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 14: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>15</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 15: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>16</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 16: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>17</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 17: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>18</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 18: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>19</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 19: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>20</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 20: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>21</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 21: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>22</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 22: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>23</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 23: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>24</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 24: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>25</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 25: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>26</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 26: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>27</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 27: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>28</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 28: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>29</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 29: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>30</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 30: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>31</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 31: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>32</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 32: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>33</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 33: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>34</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 34: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>35</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 35: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>36</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 36: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>37</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 37: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>38</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 38: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>39</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 39: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>40</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 40: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>41</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 41: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>42</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 42: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>43</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 43: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>44</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 44: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>45</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 45: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>46</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 46: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>47</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 47: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>48</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 48: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>49</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 49: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>50</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 50: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>51</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 51: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>52</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 52: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>53</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 53: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>54</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 54: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>55</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 55: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>56</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 56: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>57</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 57: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>58</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 58: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>59</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 59: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>60</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 60: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>61</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 61: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>62</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 62: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>63</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 63: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>64</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 64: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>65</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 65: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>66</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 66: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>67</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 67: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>68</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 68: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>69</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 69: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>70</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 70: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>71</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 71: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>72</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 72: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>73</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 73: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>74</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 74: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>75</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 75: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>76</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 76: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>77</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 77: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>78</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 78: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>79</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 79: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>80</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 80: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>81</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 81: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>82</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 82: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>83</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 83: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>84</div>
+    <div class='hit-count'>1</div>
+    <div class='source'>  // Line 84: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>85</div>
+    <div class='hit-count'>2</div>
+    <div class='source'>  // Line 85: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>86</div>
+    <div class='hit-count'>3</div>
+    <div class='source'>  // Line 86: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>87</div>
+    <div class='hit-count'>4</div>
+    <div class='source'>  // Line 87: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>88</div>
+    <div class='hit-count'>5</div>
+    <div class='source'>  // Line 88: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>89</div>
+    <div class='hit-count'>6</div>
+    <div class='source'>  // Line 89: mock source code</div>
+  </div>
+  <div class='line hit'>
+    <div class='line-num'>90</div>
+    <div class='hit-count'>7</div>
+    <div class='source'>  // Line 90: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>91</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 91: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>92</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 92: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>93</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 93: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>94</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 94: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>95</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 95: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>96</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 96: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>97</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 97: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>98</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 98: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>99</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 99: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>100</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 100: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>101</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 101: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>102</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 102: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>103</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 103: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>104</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 104: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>105</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 105: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>106</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 106: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>107</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 107: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>108</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 108: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>109</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 109: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>110</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 110: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>111</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 111: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>112</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 112: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>113</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 113: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>114</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 114: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>115</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 115: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>116</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 116: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>117</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 117: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>118</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 118: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>119</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 119: mock source code</div>
+  </div>
+  <div class='line miss'>
+    <div class='line-num'>120</div>
+    <div class='hit-count'>0</div>
+    <div class='source'>  // Line 120: mock source code</div>
+  </div>
+</body>
+</html>

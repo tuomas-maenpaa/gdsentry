@@ -32,7 +32,7 @@ var memory_profiler
 
 func before_each() -> void:
 	"""Setup test environment"""
-	var MemoryProfilerClass = load("res://utilities/memory_profiler.gd")
+	var MemoryProfilerClass = load("res://src/utilities/memory_profiler.gd")
 	memory_profiler = MemoryProfilerClass.new()
 	# GDTest doesn't need add_child for Node-based classes
 

@@ -42,7 +42,7 @@ func test_core_framework_files() -> bool:
 	# Test core files - try multiple possible locations
 	var file_names = ["test_manager.gd", "test_discovery.gd", "test_config.gd", "test_runner.gd"]
 	var possible_paths = [
-		"res://gdsentry/core/",
+		"res://src/core/",
 		"res://core/",
 		"res://"
 	]

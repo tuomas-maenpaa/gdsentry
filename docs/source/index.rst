@@ -99,8 +99,10 @@ Core Capabilities
    :caption: Getting Started
    :name: getting-started-toc
 
-   overview
+   installation
    getting-started
+   migration-guide
+   performance
    configuration
 
 .. toctree::
@@ -109,7 +111,6 @@ Core Capabilities
    :name: user-guide-toc
 
    user-guide
-   examples
    best-practices
    troubleshooting
 
@@ -123,6 +124,7 @@ Core Capabilities
    advanced/visual-testing
    advanced/performance-testing
    advanced/ui-testing
+   advanced/cross-architecture-testing
 
 .. toctree::
    :maxdepth: 2
@@ -147,14 +149,21 @@ Core Capabilities
 
    quick-reference
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Internal Documentation
+   :name: internal-docs-toc
+
+   internal/index
+
 Community & Support
 ===================
 
 **Get Help**
-  :doc:`troubleshooting` • :doc:`quick-reference` • :doc:`examples`
+  :doc:`troubleshooting` • :doc:`quick-reference`
 
 **Contribute**
-  `GitHub Repository <https://github.com/username/gdsentry>`_ • `Issue Tracker <https://github.com/username/gdsentry/issues>`_ • `Discussions <https://github.com/username/gdsentry/discussions>`_
+  `GitHub Repository <https://github.com/tuomas-maenpaa/gdsentry>`_ • `Issue Tracker <https://github.com/tuomas-maenpaa/gdsentry/issues>`_ • `Discussions <https://github.com/tuomas-maenpaa/gdsentry/discussions>`_
 
 **What's New**
   Recent improvements include advanced mocking, fixture management, visual testing, performance monitoring, and comprehensive CI/CD integration.

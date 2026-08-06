@@ -32,7 +32,7 @@ var data_driven
 
 func setup() -> void:
 	"""Setup test environment"""
-	data_driven = load("res://utilities/data_driven_test.gd").new()
+	data_driven = load("res://src/utilities/data_driven_test.gd").new()
 
 func teardown() -> void:
 	"""Cleanup test environment"""
@@ -470,7 +470,7 @@ func test_export_functionality() -> bool:
 	var mock_results = []
 
 	for i in range(3):
-		var result = load("res://utilities/data_driven_test.gd").TestResult.new()
+		var result = load("res://src/utilities/data_driven_test.gd").TestResult.new()
 		result.test_name = "export_test_%d" % i
 		result.test_case_id = str(i)
 		result.data_source = "mock_data"

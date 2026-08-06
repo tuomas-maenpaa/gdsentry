@@ -47,8 +47,12 @@ func test_gd_test_instantiation() -> bool:
 
 	var success = assert_not_null(gd_test, "GDTest should instantiate successfully")
 	success = success and assert_type(gd_test, TYPE_OBJECT, "Should be an object")
-	success = success and assert_equals(gd_test.get_class(), "GDTest",
-										"Should be GDTest class")
+
+	# Check class using script global name (more reliable than get_class in script mode)
+	var script_name = ""
+	if gd_test.get_script():
+		script_name = gd_test.get_script().get_global_name()
+	success = success and assert_equals(script_name, "GDTest", "Should be GDTest class")
 
 	# Test that it's a Node
 	success = success and assert_true(gd_test is Node, "Should be a Node")
@@ -97,7 +101,11 @@ func test_gd_test_metadata_properties() -> bool:
 func test_gd_test_lifecycle() -> bool:
 	"""Test GDTest lifecycle methods"""
 	var gd_test = GDTest.new()
+	gd_test.lifecycle_testing_mode = true  # Prevent automatic test execution during lifecycle testing
 	var success = true
+
+	# Add to scene tree before calling _ready to avoid timer issues
+	add_child(gd_test)
 
 	# Test _ready method (should not crash)
 	gd_test._ready()
@@ -173,6 +181,10 @@ func test_gd_test_assertion_delegation() -> bool:
 									"assert_equals with same values should pass")
 	success = success and assert_false(gd_test.assert_equals(42, 43, "Should not be equal"),
 										"assert_equals with different values should fail")
+
+	# Clean up test instance
+	if gd_test and is_instance_valid(gd_test):
+		gd_test.queue_free()
 
 	return success
 

@@ -6,94 +6,77 @@ on:
   pull_request:
     branches: [ main ]
 
+# Universal cross-platform CI/CD using Podman machines (no Kubernetes/Minikube dependency)
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        godot-version: ["3.5-stable", "4.2.2-stable"]
+        os: [ubuntu-latest, ubuntu-24.04-arm]  # Both x86_64 and ARM64 runners
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
     - name: Setup Godot
+      uses: chickensoft-games/setup-godot@v1
+      with:
+        version: 4.2.1
+        use-dotnet: false
+
+    - name: Install GDSentry CLI
       run: |
-        # Download and setup Godot based on version
-        GODOT_VERSION="${{ matrix.godot-version }}"
+        echo "Installing GDSentry CLI..."
+        pip install -e ".[dev]"
 
-        # Determine platform identifier based on version
-        if [[ "$GODOT_VERSION" == "3.5-stable" ]]; then
-          PLATFORM="x11.64"
-        elif [[ "$GODOT_VERSION" == *"4."* ]]; then
-          PLATFORM="linux.x86_64"
-        else
-          echo "Unsupported Godot version: $GODOT_VERSION"
-          exit 1
-        fi
-
-        GODOT_URL="https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_$PLATFORM.zip"
-        GODOT_DIR="Godot_v${GODOT_VERSION}_$PLATFORM"
-
-        echo "Downloading Godot ${{ matrix.godot-version }}..."
-        curl -L -o godot.zip "$GODOT_URL" || exit 1
-        echo "Unzipping Godot..."
-        unzip -l godot.zip | head -5
-        unzip godot.zip || exit 1
-        echo "Contents of directory after unzip:"
-        ls -la | grep Godot || echo "No Godot directory found"
-        chmod +x "$GODOT_DIR" || exit 1
-        
-        # Create a symlink named 'godot' to make it available in PATH
-        ln -s "$PWD/$GODOT_DIR" "$PWD/godot" || exit 1
-        echo "$PWD" >> $GITHUB_PATH
-
-        # Make godot available immediately in this step
-        export PATH="$PWD:$PATH"
-
-        # Verify Godot works
-        godot --version || exit 1
-
-    - name: Run GDSentry Self-Tests
+    - name: Set up development environment
       run: |
-        # Ensure godot is in PATH from previous step
-        export PATH="$PWD:$PATH"
+        echo "Setting up GDSentry for development..."
+        # Make GDSentry importable in development mode
+        pip install -e ".[dev]"
+        conda develop src || true  # Fallback if conda not available
 
-        echo "Current directory: $PWD"
-        echo "Godot symlink exists: $(ls -la $PWD/godot 2>/dev/null || echo 'NOT FOUND')"
-        echo "Current PATH: $PATH"
-
-        chmod +x ./gdsentry-self-test/gdsentry-self-test.sh
-        # Add debugging output
-        echo "Current directory: $(pwd)"
-        echo "Godot version: $(godot --version 2>/dev/null || echo 'Godot command failed')"
-        echo "Available memory: $(free -h || echo 'free command not available')"
-        echo "Disk space: $(df -h . | tail -1)"
-        echo "Running self-tests..."
-        ./gdsentry-self-test/gdsentry-self-test.sh --quiet
-
-    - name: Run Headless Tests (Godot 4.x only)
-      if: startsWith(matrix.godot-version, '4.')
+    - name: Run GDSentry self-tests
       run: |
-        # Ensure godot is in PATH from previous step
-        export PATH="$PWD:$PATH"
+        echo "Running GDSentry framework self-tests..."
+        # Run the framework's own tests to ensure CLI works
+        gdsentry test run --scope framework --verbose
 
-        echo "Current directory: $PWD"
-        echo "Godot symlink exists: $(ls -la $PWD/godot 2>/dev/null || echo 'NOT FOUND')"
+    - name: Build containers (optional)
+      run: |
+        echo "Building test containers..."
+        gdsentry build all || echo "Container build failed, continuing with tests"
 
-        echo "Running headless tests..."
-        godot --headless --script gdsentry/core/test_runner.gd --help
-        timeout 1800 godot --headless --script gdsentry/core/test_runner.gd --discover --verbose
+    - name: Run cross-architecture tests
+      run: |
+        echo "Running tests on current architecture..."
+        gdsentry test run --architecture $(uname -m) --report junit --output test-results/
+
+    - name: Run Python unit tests
+      run: |
+        echo "Running Python unit tests..."
+        python -m pytest tests/unit/ -v --tb=short
+
+    - name: Run type checking
+      run: |
+        echo "Running mypy type checking..."
+        python -m mypy src/ --ignore-missing-imports || echo "Mypy found type issues, continuing..."
 
     - name: Archive test reports
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-reports-godot-${{ matrix.godot-version }}
+        name: test-reports-${{ matrix.os }}
         path: |
-          reports/
+          test-results/
           *.xml
           *.html
+          pytest-results/
 
   docs:
     runs-on: ubuntu-latest

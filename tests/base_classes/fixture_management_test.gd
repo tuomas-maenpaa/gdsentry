@@ -100,7 +100,9 @@ func setup_suite() -> void:
 	)
 
 	register_fixture("user_service",
-		func(): return MockUserService.new(get_fixture("database")),
+		func():
+			var db = get_fixture("database")
+			return MockUserService.new(db),
 		["database"],  # Depends on database
 		["cleanup"]  # Cleanup method
 	)
@@ -313,7 +315,7 @@ func test_fixture_performance() -> bool:
 	var elapsed = Time.get_unix_time_from_datetime_dict(end_time) - Time.get_unix_time_from_datetime_dict(start_time)
 
 	# Performance should be very fast (fixture caching)
-	success = success and assert_less_than(elapsed, 1.0, "Fixture access should be fast (<%0.1fs)" % elapsed)
+	success = success and assert_less_than(elapsed, 1.0, "Fixture access should be fast (<%.1fs)" % elapsed)
 
 	if success:
 		print("✅ Fixture performance test passed (%.3fs)" % elapsed)

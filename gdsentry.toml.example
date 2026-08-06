@@ -1,0 +1,114 @@
+# GDSentry Configuration File
+# This file configures the GDSentry testing framework for your Godot project
+
+[project]
+# Project name
+name = "my-godot-project"
+
+# Godot version to use for testing
+# Supported: "3.5-stable", "4.2.2-stable"
+godot_version = "4.2.2-stable"
+
+# Project root directory (default: current directory)
+# project_root = "."
+
+[test]
+# Test scope: "project" (your tests), "framework" (GDSentry self-tests), "both"
+scope = "project"
+
+# Test filter pattern (glob syntax)
+# Examples: "*", "test_player*", "**/*combat*"
+filter = "*"
+
+# Enable parallel test execution (experimental)
+parallel = false
+
+# Test timeout in seconds
+timeout = 300
+
+# Watch mode for test-driven development
+watch = false
+
+# Verbose output
+verbose = false
+
+# Test category descriptions (used in test discovery output)
+# Framework categories are pre-defined below. Add your own project-specific categories.
+[test.category_descriptions]
+# Framework test categories
+meta = "Framework self-tests and meta testing"
+core = "Core engine functionality tests"
+base_classes = "Base test class implementations"
+assertions = "Assertion library tests"
+test_types = "Specialized test type implementations"
+advanced = "Advanced testing features (performance, visual, accessibility)"
+integration = "Integration and end-to-end tests"
+utilities = "Testing utility functions and helpers"
+reporters = "Test reporter and output formatting"
+unit = "Unit tests for isolated components"
+# Add your project categories here:
+# my_feature = "Tests for my custom feature"
+
+[platform]
+# Default target architecture: "auto", "x86_64", "arm64"
+# "auto" detects your system architecture
+default_arch = "auto"
+
+# Supported architectures for cross-architecture testing
+supported_archs = ["x86_64", "arm64"]
+
+# Enable QEMU emulation for cross-architecture testing
+enable_qemu = true
+
+[container]
+# Container registry (only "localhost" supported - no external dependencies)
+registry = "localhost"
+
+# Base container image name
+base_image = "gdsentry-base:latest"
+
+# Automatically build missing container images
+auto_build = true
+
+# Cleanup containers after tests complete
+cleanup_on_exit = true
+
+[validation]
+# Check license headers in source files
+check_licenses = true
+
+# Validate Python imports
+check_imports = true
+
+# Strict GDScript validation (fails on warnings)
+gdscript_strict = false
+
+# Check documentation links
+check_rst_links = true
+
+[docs]
+# Documentation output format: "html", "pdf", "linkcheck"
+format = "html"
+
+# Sphinx source directory
+source_dir = "docs/source"
+
+# Build output directory
+build_dir = "docs/build"
+
+# Preview server port
+port = 8000
+
+# Auto-rebuild documentation on file changes
+auto_build = false
+
+[ci]
+# Run full CI pipeline
+full_pipeline = true
+
+# Quick validation checks for fast feedback
+quick_checks = ["gdscript", "imports"]
+
+# Stop on first failure
+fail_fast = false
+

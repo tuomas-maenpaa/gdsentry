@@ -35,7 +35,7 @@ var DifferenceVisualizer
 
 func setup() -> void:
 	"""Setup test environment"""
-	screenshot_comparison = load("res://utilities/screenshot_comparison.gd").new()
+	screenshot_comparison = load("res://src/utilities/screenshot_comparison.gd").new()
 	ImageProcessor = ImageProcessor
 	AdvancedComparators = AdvancedComparators
 	DifferenceVisualizer = DifferenceVisualizer

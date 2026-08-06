@@ -1,0 +1,149 @@
+# GDSentry - Podman Compose Configuration
+# Multi-container setup for GDSentry development and testing
+#
+# This configuration defines all the containers needed for:
+# - Local development environment
+# - Godot version testing (3.5-stable, 4.2.2-stable)
+# - CI/CD pipeline simulation (Godot containers only)
+#
+# Note: Documentation building uses CLI directly, not containers.
+#
+# Author: GDSentry Framework
+# Version: 1.0.0
+
+version: '3.8'
+
+services:
+  # Base development environment
+  gdsentry-dev:
+    build:
+      context: .
+      dockerfile: containers/Containerfile.base
+    image: gdsentry-base:latest
+    container_name: gdsentry-dev
+    volumes:
+      - .:/workspace:cached
+      - gdsentry-artifacts:/artifacts
+    environment:
+      - USER=developer
+      - HOME=/home/developer
+    working_dir: /workspace
+    command: tail -f /dev/null  # Keep container running
+    networks:
+      - gdsentry-network
+    labels:
+      - "gdsentry.service=development"
+      - "gdsentry.version=1.0.0"
+
+  # Godot 3.5-stable testing environment
+  gdsentry-godot-3.5:
+    build:
+      context: .
+      dockerfile: containers/Containerfile.godot-3.5
+    image: gdsentry-godot-3.5:latest
+    container_name: gdsentry-godot-3.5
+    volumes:
+      - .:/workspace:ro  # Read-only source
+      - gdsentry-artifacts:/artifacts
+    environment:
+      - GODOT_VERSION=3.5-stable
+      - HEADLESS=true
+      - DISPLAY=:99
+    working_dir: /workspace
+    networks:
+      - gdsentry-network
+    labels:
+      - "gdsentry.service=testing"
+      - "gdsentry.godot-version=3.5-stable"
+      - "gdsentry.test-type=matrix"
+
+  # Godot 4.2.2-stable testing environment
+  gdsentry-godot-4.2:
+    build:
+      context: .
+      dockerfile: containers/Containerfile.godot-4.2
+    image: gdsentry-godot-4.2:latest
+    container_name: gdsentry-godot-4.2
+    volumes:
+      - .:/workspace:ro  # Read-only source
+      - gdsentry-artifacts:/artifacts
+    environment:
+      - GODOT_VERSION=4.2.2-stable
+      - GODOT4_HEADLESS=true
+      - HEADLESS=true
+      - DISPLAY=:99
+    working_dir: /workspace
+    networks:
+      - gdsentry-network
+    labels:
+      - "gdsentry.service=testing"
+      - "gdsentry.godot-version=4.2.2-stable"
+      - "gdsentry.test-type=matrix"
+
+  # Interactive testing environment (for debugging)
+  gdsentry-interactive:
+    build:
+      context: .
+      dockerfile: containers/Containerfile.godot-4.2
+    image: gdsentry-interactive:latest
+    container_name: gdsentry-interactive
+    volumes:
+      - .:/workspace
+      - gdsentry-artifacts:/artifacts
+    environment:
+      - GODOT_VERSION=4.2.2-stable
+      - DISPLAY=${DISPLAY:-:0}  # Use host display if available
+      - HEADLESS=false  # Allow GUI for debugging
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    networks:
+      - gdsentry-network
+    labels:
+      - "gdsentry.service=debug"
+      - "gdsentry.interactive=true"
+
+# Networks
+networks:
+  gdsentry-network:
+    driver: bridge
+    name: gdsentry-network
+    labels:
+      - "gdsentry.network=main"
+
+# Volumes
+volumes:
+  gdsentry-artifacts:
+    driver: local
+    name: gdsentry-artifacts
+    labels:
+      - "gdsentry.volume=artifacts"
+
+# Podman-specific configurations
+podman:
+  # Pod-level configurations
+  pods:
+    gdsentry-main:
+      containers:
+        - gdsentry-dev
+        - gdsentry-godot-3.5
+        - gdsentry-godot-4.2
+      networks:
+        - gdsentry-network
+      volumes:
+        - gdsentry-artifacts:/artifacts
+
+  # Environment variables for all containers
+  environment:
+    GDSENTRY_VERSION: "1.0.0"
+    GDSENTRY_ENV: "development"
+    DEBUG_MODE: "true"
+
+  # Default resource limits
+  resources:
+    limits:
+      memory: "8g"
+      cpus: "4"
+    reservations:
+      memory: "2g"
+      cpus: "1"

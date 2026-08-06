@@ -46,34 +46,42 @@ Create ``.github/workflows/gdsentry-tests.yml``:
         - name: Checkout code
           uses: actions/checkout@v4
 
+        - name: Setup Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.9'
+
         - name: Setup Godot
           uses: chickensoft-games/setup-godot@v1
           with:
             version: 4.2.1
             use-dotnet: false
 
-        - name: Setup GDSentry
+        - name: Install GDSentry
           run: |
-            cp -r gdsentry/ project/
-            mkdir -p test_results
+            pip install gdsentry
+
+        - name: Build test containers (optional)
+          run: |
+            gdsentry build all
 
         - name: Run GDSentry Tests
           run: |
-            godot --headless --script gdsentry/core/test_runner.gd --discover --report junit --report-path test_results/
+            gdsentry test run --report junit --output test-results/
 
         - name: Upload test results
           uses: actions/upload-artifact@v4
           if: always()
           with:
             name: test-results
-            path: test_results/
+            path: test-results/
 
         - name: Publish Test Results
           uses: dorny/test-reporter@v1
           if: always()
           with:
             name: GDSentry Tests
-            path: test_results/junit.xml
+            path: test-results/junit.xml
             reporter: java-junit
 
 **2. Environment Variables**
@@ -97,26 +105,29 @@ GitLab CI
 
     gdsentry_tests:
       stage: test
-      image: barichello/godot-ci:4.2.1
+      image: python:3.9
       only:
         - merge_requests
         - main
 
       before_script:
-        - cp -r gdsentry/ project/
-        - mkdir -p test_results
+        - pip install gdsentry
+        - apt-get update && apt-get install -y wget unzip
+        - wget https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_linux.x86_64.zip
+        - unzip Godot_v4.2.1-stable_linux.x86_64.zip
+        - mv Godot_v4.2.1-stable_linux.x86_64/Godot /usr/local/bin/godot
+        - chmod +x /usr/local/bin/godot
+        - mkdir -p test-results
 
       script:
-        - godot --headless --script gdsentry/core/test_runner.gd --discover --report junit --report-path test_results/
+        - gdsentry test run --report junit --output test-results/
 
       artifacts:
         reports:
-          junit: test_results/junit.xml
+          junit: test-results/junit.xml
         paths:
-          - test_results/
+          - test-results/
         expire_in: 1 week
-
-      coverage: '/Test Coverage: \d+\.\d+%/'
 
 **2. GitLab-Specific Configuration**
 
@@ -138,25 +149,31 @@ Jenkins
         stages {
             stage('Setup') {
                 steps {
-                    sh 'cp -r gdsentry/ project/'
-                    sh 'mkdir -p test_results'
+                    sh '''
+                        pip install gdsentry
+                        wget https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_linux.x86_64.zip
+                        unzip Godot_v4.2.1-stable_linux.x86_64.zip
+                        sudo mv Godot_v4.2.1-stable_linux.x86_64/Godot /usr/local/bin/godot
+                        sudo chmod +x /usr/local/bin/godot
+                        mkdir -p test-results
+                    '''
                 }
             }
 
             stage('Test') {
                 steps {
-                    sh 'godot --headless --script gdsentry/core/test_runner.gd --discover --report junit --report-path test_results/'
+                    sh 'gdsentry test run --report junit --output test-results/'
                 }
             }
 
             stage('Report') {
                 steps {
-                    junit 'test_results/junit.xml'
+                    junit 'test-results/junit.xml'
                     publishHTML(target: [
                         allowMissing: true,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'test_results',
+                        reportDir: 'test-results',
                         reportFiles: 'report.html',
                         reportName: 'GDSentry Test Report'
                     ])
@@ -166,7 +183,7 @@ Jenkins
 
         post {
             always {
-                archiveArtifacts artifacts: 'test_results/**/*', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
             }
         }
     }
@@ -318,18 +335,19 @@ For simple projects with unit tests only:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@v4
+        - uses: actions/setup-python@v4
+          with:
+            python-version: '3.9'
         - uses: chickensoft-games/setup-godot@v1
           with:
             version: 4.2.1
-        - run: |
-            cp -r gdsentry/ project/
-            mkdir -p test_results
-            godot --headless --script gdsentry/core/test_runner.gd --discover --report junit --report-path test_results/
+        - run: pip install gdsentry
+        - run: gdsentry test run --report junit --output test-results/
         - uses: dorny/test-reporter@v1
           if: always()
           with:
             name: GDSentry Tests
-            path: test_results/junit.xml
+            path: test-results/junit.xml
             reporter: java-junit
 
 Performance Testing Pipeline
@@ -516,33 +534,33 @@ Speed up large test suites:
             mkdir -p parallel_results
             godot --headless --script gdsentry/core/test_runner.gd --group ${{ matrix.test-group }} --total-groups 4 --report junit --report-path parallel_results/
 
-GDSentry Command Line Options
-===========================
+GDSentry CLI Options for CI/CD
+===============================
 
-Common command-line options for CI/CD:
+Common CLI options for CI/CD pipelines:
 
 .. code-block:: bash
 
     # Basic test discovery and execution
-    godot --headless --script gdsentry/core/test_runner.gd --discover
+    gdsentry test run
 
     # Generate JUnit XML report
-    godot --headless --script gdsentry/core/test_runner.gd --report junit --report-path results/
+    gdsentry test run --report junit --output results/
 
-    # Run specific test suites
-    godot --headless --script gdsentry/core/test_runner.gd --filter "unit/*"
+    # Run specific test categories
+    gdsentry test run --category unit
 
     # Enable verbose output
-    godot --headless --script gdsentry/core/test_runner.gd --verbose
+    gdsentry test run --verbose
 
-    # Performance testing
-    godot --headless --script gdsentry/core/test_runner.gd --performance
+    # Quick smoke tests
+    gdsentry test quick
 
     # Fail immediately on first error
-    godot --headless --script gdsentry/core/test_runner.gd --fail-fast
+    gdsentry test run --fail-fast
 
-    # Parallel execution
-    godot --headless --script gdsentry/core/test_runner.gd --parallel 4
+    # Custom timeout
+    gdsentry test run --timeout 300
 
 Troubleshooting
 ===============

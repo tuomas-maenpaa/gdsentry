@@ -55,7 +55,7 @@ func test_integration_test_instantiation() -> bool:
 	# Test basic instantiation
 	success = success and assert_not_null(integration_test, "IntegrationTest should instantiate successfully")
 	success = success and assert_type(integration_test, TYPE_OBJECT, "Should be an object")
-	success = success and assert_equals(integration_test.get_class(), "IntegrationTest", "Should be IntegrationTest class")
+	success = success and assert_true(integration_test is IntegrationTest, "Should be IntegrationTest instance (Godot 4.x compatibility)")
 	success = success and assert_true(integration_test is Node2DTest, "Should extend Node2DTest")
 
 	# Test default configuration values

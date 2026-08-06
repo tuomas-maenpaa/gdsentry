@@ -33,7 +33,7 @@ var templates
 
 func setup() -> void:
 	"""Setup test environment"""
-	templates = load("res://utilities/test_scenario_templates.gd").new()
+	templates = load("res://src/utilities/test_scenario_templates.gd").new()
 
 func teardown() -> void:
 	"""Cleanup test environment"""
@@ -391,7 +391,7 @@ func test_template_with_data_generator() -> bool:
 
 	template.add_step("generate_user_data",
 		func():
-			var data_generator = load("res://utilities/test_data_generator.gd").new()
+			var data_generator = load("res://src/utilities/test_data_generator.gd").new()
 			var generated_user_data = data_generator.create_user()
 			return generated_user_data
 	)

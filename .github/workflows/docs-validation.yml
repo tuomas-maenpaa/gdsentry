@@ -1,0 +1,49 @@
+name: Documentation Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/**'
+      - 'src/**/*.gd'
+      - 'scripts/validate_docs.py'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/**'
+      - 'src/**/*.gd'
+      - 'scripts/validate_docs.py'
+
+jobs:
+  validate-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      
+      - name: Run documentation validation
+        run: |
+          python scripts/validate_docs.py
+      
+      - name: Check RST links
+        run: |
+          python scripts/dev/check_rst_links.py docs/source/**/*.rst
+        continue-on-error: true
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Documentation Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Documentation validation completed" >> $GITHUB_STEP_SUMMARY

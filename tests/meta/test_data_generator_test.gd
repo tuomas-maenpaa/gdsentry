@@ -34,7 +34,7 @@ var generator
 
 func setup() -> void:
 	"""Setup test environment"""
-	generator = load("res://utilities/test_data_generator.gd").new()
+	generator = load("res://src/utilities/test_data_generator.gd").new()
 	# SceneTreeTest doesn't have add_child, so we'll manage the instance directly
 
 func teardown() -> void:

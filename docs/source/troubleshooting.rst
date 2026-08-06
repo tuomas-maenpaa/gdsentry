@@ -124,7 +124,7 @@ Test Discovery Problems
 
 5. **Check Directory Structure:**
    - Test files should be in directories specified in configuration
-   - Default locations: ``res://tests/``, ``res://gdsentry/examples/``
+   - Default locations: ``res://tests/``
 
 Common Test Failures
 ====================

@@ -56,27 +56,22 @@ func test_accessibility_testing_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/advanced/accessibility_tester_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/advanced/accessibility_tester_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_test_suite"):
-			# Execute the test suite
-			test_instance.run_test_suite()
-			print("✅ Accessibility Testing Suite Complete")
-			success = true
-		else:
-			print("❌ AccessibilityTesterTest missing run_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running Accessibility Testing Suite: ", e)
+	if test_instance and test_instance.has_method("run_test_suite"):
+		# Execute the test suite
+		test_instance.run_test_suite()
+		print("✅ Accessibility Testing Suite Complete")
+		success = true
+	else:
+		print("❌ AccessibilityTesterTest missing run_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 
@@ -86,27 +81,22 @@ func test_memory_leak_detection_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/advanced/memory_leak_detector_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/advanced/memory_leak_detector_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_test_suite"):
-			# Execute the test suite
-			test_instance.run_test_suite()
-			print("✅ Memory Leak Detection Suite Complete")
-			success = true
-		else:
-			print("❌ MemoryLeakDetectorTest missing run_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running Memory Leak Detection Suite: ", e)
+	if test_instance and test_instance.has_method("run_test_suite"):
+		# Execute the test suite
+		test_instance.run_test_suite()
+		print("✅ Memory Leak Detection Suite Complete")
+		success = true
+	else:
+		print("❌ MemoryLeakDetectorTest missing run_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 
@@ -116,27 +106,22 @@ func test_visual_regression_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/advanced/visual_regression_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/advanced/visual_regression_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_test_suite"):
-			# Execute the test suite
-			test_instance.run_test_suite()
-			print("✅ Visual Regression Suite Complete")
-			success = true
-		else:
-			print("❌ VisualRegressionTest missing run_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running Visual Regression Suite: ", e)
+	if test_instance and test_instance.has_method("run_test_suite"):
+		# Execute the test suite
+		test_instance.run_test_suite()
+		print("✅ Visual Regression Suite Complete")
+		success = true
+	else:
+		print("❌ VisualRegressionTest missing run_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 
@@ -146,27 +131,22 @@ func test_video_recording_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/advanced/video_recorder_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/advanced/video_recorder_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_test_suite"):
-			# Execute the test suite
-			test_instance.run_test_suite()
-			print("✅ Video Recording Suite Complete")
-			success = true
-		else:
-			print("❌ VideoRecorderTest missing run_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running Video Recording Suite: ", e)
+	if test_instance and test_instance.has_method("run_test_suite"):
+		# Execute the test suite
+		test_instance.run_test_suite()
+		print("✅ Video Recording Suite Complete")
+		success = true
+	else:
+		print("❌ VideoRecorderTest missing run_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 
@@ -191,27 +171,22 @@ func test_test_data_generator_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/meta/test_data_generator_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/meta/test_data_generator_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_test_suite"):
-			# Execute the test suite
-			test_instance.run_test_suite()
-			print("✅ TestDataGenerator Suite Complete")
-			success = true
-		else:
-			print("❌ TestDataGeneratorTest missing run_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running TestDataGenerator Suite: ", e)
+	if test_instance and test_instance.has_method("run_test_suite"):
+		# Execute the test suite
+		test_instance.run_test_suite()
+		print("✅ TestDataGenerator Suite Complete")
+		success = true
+	else:
+		print("❌ TestDataGeneratorTest missing run_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 
@@ -221,27 +196,22 @@ func test_performance_reporter_suite() -> bool:
 
 	var success = true
 
-	try:
-		# Load and instantiate the test class
-		var test_script = load("res://tests/meta/performance_reporter_test.gd")
-		var test_instance = test_script.new()
+	# Load and instantiate the test class
+	var test_script = load("res://tests/meta/performance_reporter_test.gd")
+	var test_instance = test_script.new()
 
-		if test_instance and test_instance.has_method("run_performance_reporter_test_suite"):
-			# Execute the test suite
-			test_instance.run_performance_reporter_test_suite()
-			print("✅ PerformanceReporter Suite Complete")
-			success = true
-		else:
-			print("❌ PerformanceReporterTest missing run_performance_reporter_test_suite method")
-			success = false
-
-		# Clean up
-		if test_instance:
-			test_instance.queue_free()
-
-	except Exception as e:
-		print("❌ Error running PerformanceReporter Suite: ", e)
+	if test_instance and test_instance.has_method("run_performance_reporter_test_suite"):
+		# Execute the test suite
+		test_instance.run_performance_reporter_test_suite()
+		print("✅ PerformanceReporter Suite Complete")
+		success = true
+	else:
+		print("❌ PerformanceReporterTest missing run_performance_reporter_test_suite method")
 		success = false
+
+	# Clean up
+	if test_instance:
+		test_instance.queue_free()
 
 	return success
 

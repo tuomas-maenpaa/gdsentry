@@ -218,207 +218,314 @@ Performance Testing
            50.0  # Max 50ms average
        )
 
-Command Line Reference
+CLI Command Reference
 ======================
 
-Basic Commands
---------------
+Test Commands
+-------------
+
+Running Tests
+~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-   # Run all tests
-   godot --script gdsentry/core/test_runner.gd --discover
+   # Run all tests in current directory
+   gdsentry test run
 
    # Run specific test file
-   godot --script gdsentry/core/test_runner.gd --test-path tests/unit/player_test.gd
+   gdsentry test run --file tests/unit/player_test.gd
 
-   # Run tests in directory
-   godot --script gdsentry/core/test_runner.gd --test-dir tests/unit/
+   # Run tests in specific directory
+   gdsentry test run --dir tests/unit/
 
    # Run with verbose output
-   godot --script gdsentry/core/test_runner.gd --verbose --discover
+   gdsentry test run --verbose
 
-Filtering Tests
----------------
+Test Discovery
+~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   # Show all available tests
+   gdsentry test discover
+
+   # Discover tests in specific directory
+   gdsentry test discover --dir tests/integration/
+
+Filtering & Selection
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
    # Filter by category
-   --filter category:unit
-
-   # Filter by tags
-   --filter tags:critical,smoke
+   gdsentry test run --category unit
 
    # Filter by pattern
-   --pattern "*player*"
+   gdsentry test run --filter "*player*"
 
-Reporting Options
------------------
+   # Quick test (framework self-tests)
+   gdsentry test quick
 
-.. code-block:: bash
+   # Simulate CI workflow locally (comprehensive testing)
+   gdsentry test ci-local
 
-   # Generate JUnit XML
-   --report junit --report-path reports/
+Build Commands
+--------------
 
-   # Generate HTML report
-   --report html --report-path reports/
-
-   # Multiple report formats
-   --report junit,html,json --report-path reports/
-
-Execution Control
------------------
+Container Building
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-   # Parallel execution
-   --parallel
+   # Build base container image
+   gdsentry build base
 
-   # Stop on first failure
-   --fail-fast
+   # Build Godot container image
+   gdsentry build godot 4.2.2-stable
 
-   # Custom timeout
-   --timeout 60
+   # Build all container images
+   gdsentry build all
 
-   # Dry run (show what would execute)
-   --dry-run
+   # Build for specific architecture
+   gdsentry build godot 4.2.2-stable --arch x86_64
 
-Configuration Profiles
-======================
-
-.. code-block:: bash
-
-   # CI optimized
-   --profile ci
-
-   # Development focused
-   --profile development
-
-   # Performance testing
-   --profile performance
-
-   # Visual regression
-   --profile visual
-
-   # Quick smoke tests
-   --profile smoke
-
-Configuration Setup
-===================
-
-Autoload Configuration
+CI Simulation Commands
 ----------------------
 
-Project → Project Settings → AutoLoad:
+Simulate CI workflows locally for rapid feedback before pushing to remote CI/CD:
 
-- **Path:** ``res://gdsentry/core/test_manager.gd``
-- **Node Name:** ``GDTestManager``
-- **Enable** ✓
+.. code-block:: bash
 
-Basic Configuration File
-------------------------
+   # Run full CI simulation (tests + docs)
+   gdsentry ci simulate --full
 
-Create ``res://gdsentry_config.tres``:
+   # Run only documentation workflow
+   gdsentry ci simulate --docs-only
 
-.. code-block:: gdscript
+   # Run only test workflow
+   gdsentry ci simulate --tests-only
 
-   [resource]
-   script = ExtResource("1")
+   # Validate CI configuration files
+   gdsentry ci validate
 
-   test_directories = Array[String](["res://tests/"])
-   execution_policies = {
-       "parallel_execution": true,
-       "fail_fast": false
-   }
-   timeout_settings = {
-       "test_timeout": 30.0
-   }
-   report_settings = {
-       "formats": Array[String](["html", "json"]),
-       "output_directory": "res://test_reports/"
-   }
+**Note**: CI simulation runs locally using CLI (not containers) for documentation building.
+Containers are used only for Godot version isolation during testing.
+
+Documentation Commands
+----------------------
+
+Build and validate documentation:
+
+.. code-block:: bash
+
+   # Build HTML documentation
+   gdsentry docs build
+
+   # Build and clean previous build
+   gdsentry docs build --clean
+
+   # Check for broken links
+   gdsentry docs linkcheck
+
+   # Clean build directory
+   gdsentry docs clean
+
+   # Run documentation validation
+   gdsentry docs validate
+
+Info Commands
+-------------
+
+Platform Information
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   # Show platform and system information
+   gdsentry info platform
+
+   # Show GDSentry version
+   gdsentry info version
+
+   # Show current configuration
+   gdsentry info config
+
+   # Show development environment information
+   gdsentry info env
+
+   # Validate Podman installation
+   gdsentry info podman
+
+   # Show Podman resource usage
+   gdsentry info resources
+
+Reporting & Output
+------------------
+
+.. code-block:: bash
+
+   # Generate JUnit XML report
+   gdsentry test run --report junit --output reports/
+
+   # Generate HTML report
+   gdsentry test run --report html --output reports/
+
+   # Multiple report formats
+   gdsentry test run --report junit,html,json --output reports/
+
+Execution Options
+-----------------
+
+.. code-block:: bash
+
+   # Stop on first failure
+   gdsentry test run --fail-fast
+
+   # Custom timeout (seconds)
+   gdsentry test run --timeout 60
+
+   # Dry run (show what would execute)
+   gdsentry test run --dry-run
+
+Cross-Architecture Testing
+--------------------------
+
+.. code-block:: bash
+
+   # Test on x86_64 architecture
+   gdsentry test run --arch x86_64
+
+   # Test on ARM64 architecture
+   gdsentry test run --arch arm64
+
+   # Test on all available architectures
+   gdsentry test run --all-architectures
+
+Configuration
+=============
+
+GDSentry CLI works out-of-the-box with sensible defaults. For advanced configuration, create a ``gdsentry.toml`` file in your project root:
+
+.. code-block:: toml
+
+   [project]
+   godot_version = "4.2.2-stable"
+   test_directories = ["tests/", "test/"]
+
+   [test]
+   timeout = 30.0
+   fail_fast = false
+
+   [report]
+   formats = ["console", "html"]
+   output_dir = "test-reports/"
+
+   [container]
+   base_image = "gdsentry-base"
+   architecture = "x86_64"
+
+Configuration File Locations
+-----------------------------
+
+GDSentry looks for configuration in this order:
+
+1. ``gdsentry.toml`` (project root)
+2. ``.gdsentry.toml`` (project root)
+3. Environment variables (``GDSENTRY_*``)
+4. Built-in defaults
+
+See :doc:`configuration` for complete configuration options.
 
 Common Issues & Solutions
 =========================
+
+CLI Not Found
+-------------
+
+- **pip install**: Ensure ``~/.local/bin`` is in your PATH
+- **conda**: Activate your conda environment first
+- **pipx**: Check that ``~/.local/bin`` is in PATH
 
 Test Discovery Fails
 --------------------
 
 - Ensure test files end with ``_test.gd``
-- Verify test classes extend GDSentry base classes
-- Check file paths use ``res://`` protocol
-- Restart Godot after adding new test files
+- Verify test classes extend GDSentry base classes (``SceneTreeTest``, etc.)
+- Check that test directories are named ``tests/`` or ``test/``
+- Run ``gdsentry test discover`` to see what tests are found
 
-Null Reference Errors
----------------------
+Godot Not Found
+---------------
 
-- Use ``assert_not_null()`` to check object creation
-- Verify scene loading with ``ResourceLoader.exists()``
-- Check autoload availability before use
-- Initialize variables before use in tests
+- Ensure Godot is installed and accessible via command line
+- Check ``godot --version`` works in terminal
+- Specify Godot path in ``gdsentry.toml`` if needed
+
+Container/Podman Errors
+-----------------------
+
+- Install Podman or Docker
+- Start Podman machine: ``podman machine start``
+- Build containers first: ``gdsentry build all``
 
 Timeout Errors
 --------------
 
-- Increase individual test timeouts: ``test_timeout = 60.0``
-- Use ``await`` for async operations
+- Increase timeout: ``gdsentry test run --timeout 60``
+- Use ``await`` for async operations in tests
 - Break long tests into smaller focused tests
-- Profile slow operations to identify bottlenecks
 
-Visual Test Failures
---------------------
+Test Failures
+-------------
 
-- Wait for scene initialization: ``await wait_for_frames(5)``
-- Use appropriate tolerance for position checks
-- Verify viewport size and scaling
-- Check for animation completion
+- Run with verbose output: ``gdsentry test run --verbose``
+- Check test file syntax and imports
+- Ensure Godot project structure is correct
+- Verify test methods return ``bool`` values
 
-Performance Test Issues
------------------------
+Project Structure Template
+===========================
 
-- Warm up system before measurement: ``await wait_for_frames(60)``
-- Use consistent test environment
-- Disable VSync for accurate FPS measurement
-- Run multiple iterations for statistical validity
-
-File Structure Template
-=======================
-
-Recommended Project Structure:
+Recommended Godot project structure with tests:
 
 .. code-block::
 
-   your_project/
-   ├── gdsentry/                    # GDSentry framework
-   ├── tests/
+   your-godot-project/
+   ├── project.godot              # Godot project file
+   ├── tests/                     # Test directory (auto-discovered)
    │   ├── unit/                  # SceneTreeTest classes
-   │   │   ├── core/              # Core logic tests
-   │   │   └── systems/           # System tests
+   │   │   ├── test_player.gd
+   │   │   ├── test_inventory.gd
+   │   │   └── test_combat.gd
    │   ├── visual/                # Node2DTest classes
-   │   │   ├── ui/                # UI component tests
-   │   │   └── scenes/            # Scene tests
-   │   └── integration/           # IntegrationTest classes
-   │       └── gameplay/          # End-to-end tests
-   ├── scenes/
-   │   ├── ui/
-   │   └── game/
-   └── scripts/
-       ├── core/
-       └── systems/
+   │   │   ├── test_main_menu.gd
+   │   │   ├── test_hud.gd
+   │   │   └── test_dialogue.gd
+   │   ├── integration/           # IntegrationTest classes
+   │   │   ├── test_level_loading.gd
+   │   │   └── test_save_system.gd
+   │   └── performance/           # PerformanceTest classes
+   │       └── test_frame_rate.gd
+   ├── scripts/                   # Your game scripts
+   │   ├── player.gd
+   │   ├── inventory.gd
+   │   └── ui/
+   ├── scenes/                    # Your game scenes
+   │   ├── main_menu.tscn
+   │   └── game_world.tscn
+   └── gdsentry.toml              # Optional configuration
 
 Test File Naming:
 
-- ``player_controller_test.gd``
-- ``ui_menu_test.gd``
-- ``game_physics_test.gd``
-- ``save_system_test.gd``
+- End with ``_test.gd`` (e.g., ``player_test.gd``)
+- Use descriptive names (``test_player_movement.gd``)
+- Group related tests in same file
 
-Method Naming:
+Test Method Naming:
 
-- ``test_player_movement()``
-- ``test_jump_mechanics()``
-- ``test_collision_detection()``
-- ``test_save_load_cycle()``
+- Start with ``test_`` (e.g., ``test_player_movement()``)
+- Include expected behavior (``test_jump_mechanics()``)
+- Use descriptive names (``test_collision_detection()``)
 
 For detailed documentation, see:
 

@@ -1,100 +1,331 @@
-Examples
-========
+Testing Examples
+================
 
-This section provides practical examples of GDSentry testing patterns. You can find complete, runnable examples in the ``examples/`` directory of the GDSentry framework.
+This section provides practical examples of GDSentry testing patterns with inline code snippets. All examples can be copied directly into your Godot project's ``tests/`` directory.
 
-Calculator Test Example
-=======================
+Unit Testing Example
+====================
 
-A comprehensive unit test demonstrating mathematical operations validation using the SceneTreeTest base class. This example shows how to test a complete calculator implementation with proper error handling and performance testing.
+A comprehensive unit test demonstrating game logic validation using SceneTreeTest.
 
 **Key Features Demonstrated:**
 - Unit testing with SceneTreeTest base class
-- Test metadata and organization
-- Mock class implementation within test file
+- Test organization with ``run_test_suite()``
 - Comprehensive assertion usage
-- Performance benchmarking
 - Error condition testing
 
-.. literalinclude:: ../../examples/calculator_test.gd
-   :language: gdscript
-   :lines: 1-177
+**Complete Test File:**
 
-**Test Structure Analysis:**
+.. code-block:: gdscript
 
-The calculator test demonstrates several GDSentry patterns:
+   # tests/test_player.gd
+   extends SceneTreeTest
 
-1. **Test Metadata:** Uses ``_init()`` to set test description, tags, priority, and category
-2. **Mock Implementation:** Contains a complete Calculator class for testing
-3. **Test Organization:** Uses ``run_test_suite()`` to organize test execution
-4. **Assertion Patterns:** Comprehensive use of ``assert_equals()`` for validation
-5. **Error Handling:** Tests edge cases like division by zero and negative square roots
-6. **Performance Testing:** Includes benchmark testing for operation speed
+   func _init():
+       test_description = "Player character logic and behavior tests"
+       test_tags = ["unit", "player", "gameplay"]
+       test_priority = "high"
+       test_category = "core"
 
-**Running the Calculator Test:**
+   func run_test_suite() -> void:
+       run_test("test_player_initialization", func(): return test_player_initialization())
+       run_test("test_player_health_system", func(): return test_player_health_system())
+       run_test("test_player_movement", func(): return test_player_movement())
+       run_test("test_player_combat", func(): return test_player_combat())
+
+   # Mock Player class for testing
+   class MockPlayer:
+       var health: int = 100
+       var max_health: int = 100
+       var position: Vector2 = Vector2.ZERO
+       var speed: float = 200.0
+
+       func take_damage(amount: int) -> void:
+           health = max(0, health - amount)
+
+       func heal(amount: int) -> void:
+           health = min(max_health, health + amount)
+
+       func move(direction: Vector2) -> void:
+           position += direction.normalized() * speed
+
+       func is_alive() -> bool:
+           return health > 0
+
+   func test_player_initialization() -> bool:
+       var player = MockPlayer.new()
+       return assert_equals(player.health, 100) and assert_equals(player.max_health, 100)
+
+   func test_player_health_system() -> bool:
+       var player = MockPlayer.new()
+
+       # Test damage
+       player.take_damage(25)
+       var success = assert_equals(player.health, 75)
+
+       # Test healing
+       player.heal(10)
+       success = success and assert_equals(player.health, 85)
+
+       # Test over-healing
+       player.heal(50)  # Would take to 135, but caps at max_health
+       success = success and assert_equals(player.health, 100)
+
+       # Test death
+       player.take_damage(150)
+       success = success and assert_equals(player.health, 0)
+       success = success and assert_false(player.is_alive())
+
+       return success
+
+   func test_player_movement() -> bool:
+       var player = MockPlayer.new()
+       player.position = Vector2(0, 0)
+
+       # Test basic movement
+       player.move(Vector2(10, 0))
+       var expected = Vector2(10, 0).normalized() * 200.0
+       var success = assert_equals(player.position, expected)
+
+       # Test diagonal movement
+       var start_pos = player.position
+       player.move(Vector2(3, 4))  # Should result in normalized movement
+       var move_vector = Vector2(3, 4).normalized() * 200.0
+       success = success and assert_equals(player.position, start_pos + move_vector)
+
+       return success
+
+   func test_player_combat() -> bool:
+       var player = MockPlayer.new()
+       var enemy = MockPlayer.new()
+
+       # Test combat interaction
+       enemy.take_damage(30)
+       var success = assert_equals(enemy.health, 70)
+
+       # Test that dead enemies stay dead
+       enemy.take_damage(100)
+       enemy.take_damage(50)  # Should not go below 0
+       success = success and assert_equals(enemy.health, 0)
+
+       return success
+
+**Running This Test:**
 
 .. code-block:: bash
 
-   # Run the calculator test directly
-   godot --script gdsentry/examples/calculator_test.gd
+   # From your Godot project directory
+   gdsentry test run --file tests/test_player.gd
 
-   # Run with GDSentry test runner
-   godot --script gdsentry/core/test_runner.gd --test-path gdsentry/examples/calculator_test.gd
+   # Run with verbose output
+   gdsentry test run --file tests/test_player.gd --verbose
 
-UI Layout Test Example
-======================
+Visual UI Testing Example
+=========================
 
-A comprehensive visual UI testing example using the Node2DTest base class. This example demonstrates testing UI components, layout validation, interaction simulation, and visual assertions.
+A comprehensive visual UI testing example using Node2DTest for testing user interfaces.
 
 **Key Features Demonstrated:**
 - Visual testing with Node2DTest base class
+- UI component validation
+- Position and layout testing
+- Scene loading and inspection
 - UI element creation and positioning
 - Button interaction testing
 - Signal testing patterns
 - Visual assertion methods
-- Collision detection testing
 - Layout constraint validation
 
-.. literalinclude:: ../../examples/ui_layout_test.gd
-   :language: gdscript
-   :lines: 1-220
+**Complete Test File:**
 
-**Test Structure Analysis:**
+.. code-block:: gdscript
 
-The UI layout test demonstrates advanced visual testing patterns:
+   # tests/test_ui_layout.gd
+   extends Node2DTest
 
-1. **Visual Test Setup:** Extends Node2DTest for scene-based testing
-2. **UI Element Testing:** Tests buttons, labels, sprites, and collision shapes
-3. **Interaction Simulation:** Demonstrates button press simulation and signal testing
-4. **Visual Assertions:** Uses ``assert_visible()``, ``assert_position()``, ``assert_scale()``
-5. **Async Testing:** Shows ``await`` usage for physics and timing-dependent tests
-6. **Helper Methods:** Includes utility methods for creating test UI elements
+   func _init():
+       test_description = "UI layout and interaction tests"
+       test_tags = ["visual", "ui", "layout"]
+       test_category = "interface"
 
-**Running the UI Layout Test:**
+   func run_test_suite() -> void:
+       run_test("test_button_creation_and_positioning", func(): return test_button_creation_and_positioning())
+       run_test("test_label_text_and_visibility", func(): return test_label_text_and_visibility())
+       run_test("test_ui_layout_constraints", func(): return test_ui_layout_constraints())
+
+   func test_button_creation_and_positioning() -> bool:
+       # Create a test button
+       var button = Button.new()
+       button.text = "Test Button"
+       button.position = Vector2(100, 50)
+       button.size = Vector2(120, 40)
+       add_child(button)
+
+       # Test positioning and sizing
+       var success = assert_position(button, Vector2(100, 50), 1.0)
+       success = success and assert_visible(button)
+       success = success and assert_equals(button.text, "Test Button")
+
+       # Test button interaction simulation
+       var initial_text = button.text
+       # Note: Button interaction would be tested with signal connections
+       success = success and assert_equals(button.text, initial_text)
+
+       return success
+
+   func test_label_text_and_visibility() -> bool:
+       # Create a test label
+       var label = Label.new()
+       label.text = "Hello World"
+       label.position = Vector2(200, 100)
+       add_child(label)
+
+       # Test label properties
+       var success = assert_visible(label)
+       success = success and assert_equals(label.text, "Hello World")
+       success = success and assert_position(label, Vector2(200, 100), 1.0)
+
+       # Test text changes
+       label.text = "Updated Text"
+       success = success and assert_equals(label.text, "Updated Text")
+
+       return success
+
+   func test_ui_layout_constraints() -> bool:
+       # Create a container with multiple UI elements
+       var container = Control.new()
+       container.size = Vector2(400, 300)
+       add_child(container)
+
+       # Create child elements
+       var title = Label.new()
+       title.text = "Game Title"
+       title.position = Vector2(150, 50)
+       container.add_child(title)
+
+       var start_button = Button.new()
+       start_button.text = "Start Game"
+       start_button.position = Vector2(150, 200)
+       start_button.size = Vector2(100, 40)
+       container.add_child(start_button)
+
+       # Test layout constraints
+       var success = assert_visible(title)
+       success = success and assert_visible(start_button)
+       success = success and assert_position(title, Vector2(150, 50), 2.0)
+       success = success and assert_position(start_button, Vector2(150, 200), 2.0)
+
+       # Test that elements are properly contained
+       success = success and assert_true(title.position.x >= 0)
+       success = success and assert_true(title.position.y >= 0)
+       success = success and assert_true(start_button.position.x >= 0)
+       success = success and assert_true(start_button.position.y >= 0)
+
+       return success
+
+**Running This Test:**
 
 .. code-block:: bash
 
-   # Run the UI layout test directly
-   godot --script gdsentry/examples/ui_layout_test.gd
+   # From your Godot project directory
+   gdsentry test run --file tests/test_ui_layout.gd
 
-   # Run with GDSentry test runner
-   godot --script gdsentry/core/test_runner.gd --test-path gdsentry/examples/ui_layout_test.gd
-
-   # Run with visual debugging (if supported)
-   godot --script gdsentry/core/test_runner.gd --test-path gdsentry/examples/ui_layout_test.gd --verbose
+   # Run visual tests only
+   gdsentry test run --category visual
 
 Common Testing Patterns
 =======================
 
-Scene Loading Pattern
----------------------
+Data-Driven Testing
+-------------------
 
 .. code-block:: gdscript
 
-    extends Node2DTest
+   # tests/test_inventory.gd
+   extends SceneTreeTest
 
-    func test_scene_loading() -> bool:
-        # Load a test scene
+   func run_test_suite() -> void:
+       run_test("test_inventory_capacity", func(): return test_inventory_capacity())
+
+   func test_inventory_capacity() -> bool:
+       var inventory = Inventory.new()
+       var test_cases = [
+           {"items": 5, "capacity": 10, "expected": true},
+           {"items": 10, "capacity": 10, "expected": true},
+           {"items": 15, "capacity": 10, "expected": false}
+       ]
+
+       var success = true
+       for test_case in test_cases:
+           inventory.clear()
+           inventory.capacity = test_case.capacity
+
+           # Add items up to the test count
+           for i in range(test_case.items):
+               inventory.add_item("test_item")
+
+           var can_add_more = inventory.can_add_item("new_item")
+           success = success and assert_equals(can_add_more, test_case.expected,
+               "Failed for %d items in capacity %d" % [test_case.items, test_case.capacity])
+
+       return success
+
+Async Testing with Timeouts
+---------------------------
+
+.. code-block:: gdscript
+
+   # tests/test_async_operations.gd
+   extends SceneTreeTest
+
+   func run_test_suite() -> void:
+       run_test("test_async_loading", func(): return await test_async_loading())
+
+   func test_async_loading() -> bool:
+       var loader = ResourceLoader.new()
+       var start_time = Time.get_time()
+
+       # Simulate async loading
+       await get_tree().create_timer(0.1).timeout
+
+       var end_time = Time.get_time()
+       var load_time = end_time - start_time
+
+       # Test that loading took reasonable time
+       var success = assert_true(load_time >= 0.08, "Loading should take at least 80ms")
+       success = success and assert_true(load_time <= 0.2, "Loading should complete within 200ms")
+
+       return success
+
+Error Handling and Edge Cases
+------------------------------
+
+.. code-block:: gdscript
+
+   # tests/test_error_conditions.gd
+   extends SceneTreeTest
+
+   func run_test_suite() -> void:
+       run_test("test_division_by_zero", func(): return test_division_by_zero())
+       run_test("test_invalid_input", func(): return test_invalid_input())
+
+   func test_division_by_zero() -> bool:
+       var calculator = Calculator.new()
+
+       # Test that division by zero is handled gracefully
+       var result = calculator.divide(10, 0)
+
+       # Should return 0 or some safe value, not crash
+       return assert_equals(result, 0)  # Assuming safe division returns 0
+
+   func test_invalid_input() -> bool:
+       var parser = DataParser.new()
+
+       # Test parsing invalid data
+       var result = parser.parse_json("invalid json string")
+
+       # Should handle gracefully, not crash
+       return assert_null(result)  # Assuming invalid JSON returns null
         var scene = load_test_scene("res://scenes/test_scene.tscn")
 
         # Verify scene loaded correctly
@@ -337,30 +568,26 @@ Integration Testing Pattern
 
         return true
 
-Running the Examples
-====================
+Running Test Examples
+=====================
 
-To run these examples, use the GDSentry test runner:
+All test examples shown above are self-contained and can be copied directly into your project's test directory. To run them:
 
 .. code-block:: bash
 
-    # Run the calculator test example
-    godot --script gdsentry/core/test_runner.gd --test-path gdsentry/examples/calculator_test.gd
+    # Run a specific test file
+    gdsentry test run --file tests/test_player.gd
 
-    # Run the UI layout test example
-    godot --script gdsentry/core/test_runner.gd --test-path gdsentry/examples/ui_layout_test.gd
-
-    # Run all examples in the examples directory
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/
+    # Run all tests in a directory
+    gdsentry test run --directory tests/
 
     # Run with verbose output
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/ --verbose
+    gdsentry test run --verbose
 
-    # Run examples with specific filtering
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/ --filter category:examples
+    # Run and generate HTML report
+    gdsentry test run --report html --output reports/
 
-    # Run examples and generate HTML report
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/ --report html --report-path reports/
+See :doc:`quick-reference` for more CLI command examples.
 
 **Expected Output:**
 

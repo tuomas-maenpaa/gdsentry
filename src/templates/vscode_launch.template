@@ -1,0 +1,29 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug GDSentry Test",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}",
+			"scene": "${file}",
+			"args": []
+		},
+		{
+			"name": "Run All GDSentry Tests",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}",
+			"scene": "res://src/core/test_runner.gd",
+			"args": ["--discover"]
+		},
+		{
+			"name": "Run GDSentry CLI Tests",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/src/gdsentry/__main__.py",
+			"args": ["test", "run"],
+			"console": "integratedTerminal"
+		}
+	]
+}

@@ -12,7 +12,7 @@
 # Author: GDSentry Framework
 # Version: 1.0.0
 
-extends "res://base_classes/scene_tree_test.gd"
+extends SceneTreeTest
 
 class_name SceneTreeTestTest
 

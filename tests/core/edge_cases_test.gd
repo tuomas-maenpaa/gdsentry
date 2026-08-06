@@ -285,7 +285,7 @@ func test_deep_directory_structures() -> bool:
 	success = success and assert_not_null(result, "Should handle directory structures")
 
 	# Test with custom search directories
-	var custom_dirs = ["res://tests/", "res://gdsentry/examples/"]
+	var custom_dirs = ["res://tests/"]
 	result = discovery.discover_tests(custom_dirs)
 	success = success and assert_not_null(result, "Should handle custom directories")
 

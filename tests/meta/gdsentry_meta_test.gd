@@ -8,7 +8,7 @@
 # Author: GDSentry Framework
 # Created: Auto-generated for self-testing
 
-extends "res://base_classes/scene_tree_test.gd"
+extends SceneTreeTest
 
 class_name GDSentryMetaTest
 

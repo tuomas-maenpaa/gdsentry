@@ -168,7 +168,7 @@ Method 2: Git Submodule (For Version Control)
 .. code-block:: bash
 
    # From your project root
-   git submodule add https://github.com/username/gdsentry.git gdsentry
+   git submodule add https://github.com/tuomas-maenpaa/gdsentry.git gdsentry
    git submodule update --init --recursive
 
 Method 3: Godot Asset Library (Future)

@@ -17,7 +17,7 @@ extends GDTest
 class_name NodeTestTypeTest
 
 # Load NodeTest class for testing
-const NodeTestClass = preload("res://base_classes/node_test.gd")
+var NodeTestClass = NodeTest
 
 # ------------------------------------------------------------------------------
 # TEST METADATA
@@ -51,7 +51,7 @@ func test_node_test_instantiation() -> bool:
 	"""Test that NodeTest can be instantiated correctly"""
 	var node_test = NodeTest.new()
 	assert_not_null(node_test, "NodeTest should be instantiable")
-	assert_equals(node_test.get_class(), "NodeTest", "NodeTest should have correct class name")
+	assert_true(node_test is NodeTest, "NodeTest should be NodeTest instance (Godot 4.x compatibility)")
 
 	# Check default properties
 	assert_equals(node_test.test_category, "node", "Default test category should be 'node'")

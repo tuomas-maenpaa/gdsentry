@@ -24,6 +24,7 @@ build/
 dist/
 *.exe
 *.app
+artifacts/
 
 # Development files
 .vscode/
@@ -46,6 +47,10 @@ reports/
 docs/build/
 docs/_build/
 
+# Container build artifacts (generated from infra/containers/)
+Containerfile.*
+containerfile.*
+
 # Environment files
 .env
 .env.local
@@ -53,3 +58,36 @@ docs/_build/
 # Backup files
 *.bak
 *.orig
+
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Python tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python package metadata
+*.egg-info/
+*.egg
+.eggs/
+
+# Core dumps
+*.core
+
+# Downloaded dependencies
+*.zip
+*.tar.gz
+*.tgz
+/godot-*/
+
+# Runtime artifacts directory
+.runtime/

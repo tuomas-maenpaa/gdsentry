@@ -8,7 +8,7 @@
 # Author: GDSentry Framework
 # Created: Auto-generated for self-testing
 
-extends "res://base_classes/node2d_test.gd"
+extends Node2DTest
 
 class_name GDSentryVisualMetaTest
 
@@ -20,13 +20,13 @@ func test_visual_components_exist() -> void:
 	print("🎨 META: Testing visual component existence")
 
 	# Test that visual components can be loaded
-	var visual_test = load("res://gdsentry/test_types/visual_test.gd")
+	var visual_test = load("res://src/test_types/visual_test.gd")
 	assert_not_null(visual_test, "VisualTest class should exist")
 
-	var event_test = load("res://gdsentry/test_types/event_test.gd")
+	var event_test = load("res://src/test_types/event_test.gd")
 	assert_not_null(event_test, "EventTest class should exist")
 
-	var ui_test = load("res://gdsentry/test_types/ui_test.gd")
+	var ui_test = load("res://src/test_types/ui_test.gd")
 	assert_not_null(ui_test, "UITest class should exist")
 
 	print("✅ META: Visual components exist")
