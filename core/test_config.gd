@@ -20,9 +20,11 @@ class_name GDTestConfig
 # CONFIGURATION PROPERTIES
 # ------------------------------------------------------------------------------
 @export_group("Test Discovery")
+## Optional install path for the GDSentry framework (e.g. "res://.gdsentry").
+## Empty = auto-detect (self-locate, then candidate scan). Must contain core/test_manager.gd.
+@export var framework_root: String = ""
 @export var test_directories: Array[String] = [
 	"res://tests/",
-	"res://gdsentry/examples/"
 ]
 @export var recursive_discovery: bool = true
 @export var discovery_patterns: Array[String] = [
@@ -267,8 +269,20 @@ func merge_with(other_config: GDTestConfig) -> GDTestConfig:
 	merged_config.test_directories = other_config.test_directories if not other_config.test_directories.is_empty() else test_directories
 	merged_config.discovery_patterns = other_config.discovery_patterns if not other_config.discovery_patterns.is_empty() else discovery_patterns
 	merged_config.exclude_patterns = other_config.exclude_patterns if not other_config.exclude_patterns.is_empty() else exclude_patterns
+	merged_config.framework_root = other_config.framework_root if not other_config.framework_root.is_empty() else framework_root
 
 	return merged_config
+
+## Returns discovery directories with the framework examples/ folder appended when path resolution is ready.
+func get_resolved_test_directories(paths_helper: GDScript = null) -> Array[String]:
+	var dirs: Array[String] = []
+	for dir_path in test_directories:
+		dirs.append(dir_path)
+	if paths_helper != null and paths_helper.is_ready():
+		var examples_dir: String = paths_helper.examples()
+		if not examples_dir.is_empty() and not dirs.has(examples_dir) and not dirs.has(examples_dir + "/"):
+			dirs.append(examples_dir if examples_dir.ends_with("/") else examples_dir + "/")
+	return dirs
 
 func _deep_merge_dict(base: Dictionary, override: Dictionary) -> Dictionary:
 	"""Deep merge two dictionaries"""

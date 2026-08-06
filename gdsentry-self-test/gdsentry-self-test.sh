@@ -117,6 +117,7 @@ fi
 
 # Load all required modules using absolute paths
 source "$SELF_TEST_DIR/lib/config.sh"
+source "$SELF_TEST_DIR/lib/project.sh"
 source "$SELF_TEST_DIR/lib/discovery.sh"
 source "$SELF_TEST_DIR/lib/processor.sh"
 source "$SELF_TEST_DIR/lib/executor.sh"
@@ -143,6 +144,16 @@ main() {
     # Validate configuration
     if ! validate_configuration; then
         exit $?
+    fi
+
+    # Apply --keep-project before materialize/cleanup
+    if [ "$(get_config keep_project)" = "true" ]; then
+        GDSENTRY_KEEP_PROJECT="true"
+    fi
+
+    # Host project or standalone template materialize
+    if ! ensure_godot_project_context; then
+        exit $EX_CONFIG_ERROR
     fi
 
     # Show Godot version
@@ -217,6 +228,7 @@ check_module_loading() {
         "count_tests_by_category" "show_test_distribution" "get_config"
         "should_use_reporting_mode" "execute_dry_run" "execute_discovery_dry_run"
         "execute_reporting_mode" "execute_individual_mode"
+        "ensure_godot_project_context" "cleanup_godot_project_context" "to_res_path"
     )
 
     local missing_functions=()

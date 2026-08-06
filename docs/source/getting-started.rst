@@ -11,6 +11,8 @@ Copy GDSentry to your Godot project:
     # Copy GDSentry to your Godot project
     cp -r gdsentry/ your-project/
 
+The folder name ``gdsentry/`` is the documented default. Alternate install folders such as ``.gdsentry/`` or ``addons/gdsentry/`` also work: the framework auto-detects its root (or you can set ``framework_root`` in ``gdsentry_config.tres``). See :doc:`configuration` for details. When using a non-default folder, point the CLI and autoload paths at that folder (for example ``.gdsentry/core/test_runner.gd``).
+
 Configure GDSentry Autoload
 -------------------------
 

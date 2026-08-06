@@ -2,6 +2,19 @@
 
 All notable changes to GDSentry will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Configurable framework root**: `framework_root` on `GDTestConfig` plus auto-detection via `core/framework_paths.gd` (self-locate, then candidate scan for `gdsentry/`, `.gdsentry/`, `addons/gdsentry/`, and standalone `res://`)
+- **Fail-fast path resolution**: unresolved or invalid roots log clearly and abort the runner; no silent fallback to `res://gdsentry`
+- **Self-test project template**: `templates/project.godot.template` materialized by the self-test harness when no host `project.godot` exists (cleaned up after the run)
+- **Core self-test**: `tests/core/framework_paths_test.gd` for resolution success and failure cases
+
+### Changed
+
+- Core loaders (`test_runner`, `test_discovery`, `gdsentry.gd`, `reporter_manager`) resolve framework-internal paths through `framework_paths` instead of hardcoded `res://gdsentry/` / `res://base_classes/` defaults
+
 ## [1.0.0] - 2025-01-22
 
 Initial release of GDSentry - a comprehensive testing framework for Godot game development.
