@@ -16,6 +16,7 @@ CONFIG_FILE_PATTERN=""
 CONFIG_SELECTED_FILES=()
 CONFIG_REPORT_FORMATS=""
 CONFIG_REPORT_PATH=""
+CONFIG_KEEP_PROJECT=false
 
 # Parse command-line arguments and populate configuration
 parse_arguments() {
@@ -70,6 +71,11 @@ parse_arguments() {
             --dry-run)
                 CONFIG_DRY_RUN=true
                 echo "🔍 Dry run mode: ENABLED"
+                shift
+                ;;
+            --keep-project)
+                CONFIG_KEEP_PROJECT=true
+                echo "📦 Keep materialized project.godot: ENABLED"
                 shift
                 ;;
             --report|-r)
@@ -143,6 +149,7 @@ show_help() {
     echo "  --verbose, -v               Show detailed Godot output for each test execution"
     echo "  --quiet                     Suppress non-essential output (for CI/CD)"
     echo "  --dry-run                   Show tests that would run without executing them"
+    echo "  --keep-project              Keep harness-created project.godot after the run"
     echo ""
     echo "Reporting Options:"
     echo "  --report, -r FORMATS        Generate test reports (comma-separated: json,junit,html)"
@@ -222,6 +229,7 @@ get_config() {
         "verbose") echo "$CONFIG_VERBOSE" ;;
         "quiet") echo "$CONFIG_QUIET" ;;
         "dry_run") echo "$CONFIG_DRY_RUN" ;;
+        "keep_project") echo "$CONFIG_KEEP_PROJECT" ;;
         "file_pattern") echo "$CONFIG_FILE_PATTERN" ;;
         "report_formats") echo "$CONFIG_REPORT_FORMATS" ;;
         "report_path") echo "$CONFIG_REPORT_PATH" ;;

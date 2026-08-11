@@ -9,6 +9,8 @@
 
 extends Node
 
+const _Paths = preload("./framework_paths.gd")
+
 # ------------------------------------------------------------------------------
 # FRAMEWORK CONSTANTS
 # ------------------------------------------------------------------------------
@@ -18,17 +20,28 @@ const FRAMEWORK_NAME = "GDSentry"
 # ------------------------------------------------------------------------------
 # STATIC CLASS ACCESS METHODS
 # ------------------------------------------------------------------------------
+static func _ensure_paths() -> bool:
+	if _Paths.is_ready():
+		return true
+	return _Paths.setup(_Paths)
+
 static func SceneTreeTest() -> GDScript:
 	"""Get the SceneTreeTest class"""
-	return load("res://../base_classes/scene_tree_test.gd")
+	if not _ensure_paths():
+		return null
+	return load(_Paths.base_class("scene_tree_test.gd"))
 
 static func Node2DTest() -> GDScript:
 	"""Get the Node2DTest class"""
-	return load("res://../base_classes/node2d_test.gd")
+	if not _ensure_paths():
+		return null
+	return load(_Paths.base_class("node2d_test.gd"))
 
 static func GDTest() -> GDScript:
 	"""Get the GDTest base class"""
-	return load("res://../base_classes/gd_test.gd")
+	if not _ensure_paths():
+		return null
+	return load(_Paths.base_class("gd_test.gd"))
 
 # ------------------------------------------------------------------------------
 # STATIC UTILITY METHODS

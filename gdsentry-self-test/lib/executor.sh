@@ -12,6 +12,10 @@ cleanup_temp_files() {
     fi
     # Clean up any temporary output files
     rm -f /tmp/godot_output_*.log 2>/dev/null || true
+    # Remove harness-created standalone project if applicable
+    if declare -F cleanup_godot_project_context >/dev/null 2>&1; then
+        cleanup_godot_project_context
+    fi
 }
 
 # Set up signal handling for clean interruption
@@ -28,8 +32,11 @@ get_test_execution_method() {
     # Check file content to determine execution method
     if grep -q "extends Node2DTest\|extends.*Node2D" "$test_file" 2>/dev/null; then
         echo "node2d_scene"
-    elif grep -q "extends SceneTreeTest\|extends.*SceneTree" "$test_file" 2>/dev/null; then
+    elif grep -q "extends SceneTreeTest\|extends.*SceneTreeTest\|extends \".*scene_tree_test" "$test_file" 2>/dev/null; then
         echo "scene_tree_script"
+    elif grep -q "^extends SceneTree$" "$test_file" 2>/dev/null; then
+        # Pure SceneTree main-loop scripts (no SceneTreeTest / GDTestManager)
+        echo "scene_tree_main"
     elif [[ "$test_file" == *"visual"* ]] || [[ "$test_file" == *"ui"* ]] || [[ "$test_file" == *"node2d"* ]]; then
         echo "node2d_scene"
     else
@@ -41,11 +48,13 @@ get_test_execution_method() {
 create_node2d_scene() {
     local test_path="$1"
     local temp_scene="/tmp/gdsentry_temp_scene_$$_$RANDOM.tscn"
+    local res_path
+    res_path="$(to_res_path "$test_path")"
     
     cat > "$temp_scene" << EOF
 [gd_scene load_steps=2 format=3 uid="uid://test_scene"]
 
-[ext_resource type="Script" path="res://$test_path" id="1"]
+[ext_resource type="Script" path="$res_path" id="1"]
 
 [node name="TestRoot" type="Node2D"]
 script = ExtResource("1")
@@ -58,11 +67,13 @@ EOF
 create_scene_tree_scene() {
     local test_path="$1"
     local temp_scene="/tmp/gdsentry_temp_scene_$$_$RANDOM.tscn"
+    local res_path
+    res_path="$(to_res_path "$test_path")"
     
     cat > "$temp_scene" << EOF
 [gd_scene load_steps=2 format=3 uid="uid://test_scene"]
 
-[ext_resource type="Script" path="res://$test_path" id="1"]
+[ext_resource type="Script" path="$res_path" id="1"]
 
 [node name="TestRoot" type="Node"]
 script = ExtResource("1")
@@ -79,7 +90,8 @@ execute_with_system_timeout() {
     
     echo "⏱️ Using system timeout command (${timeout_duration}s)"
     local output
-    output=$(godot --scene "$scene" --headless --quit 2>&1)
+    local project_path="${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR}"
+    output=$(godot --path "$project_path" --scene "$scene" --headless --quit 2>&1)
     local exit_code=$?
     
     # Process output and return result
@@ -97,7 +109,8 @@ execute_with_manual_timeout() {
     
     # Start Godot in background and capture output
     local output_file="/tmp/godot_output_$$_$RANDOM"
-    godot --scene "$scene" --headless --quit > "$output_file" 2>&1 &
+    local project_path="${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR}"
+    godot --path "$project_path" --scene "$scene" --headless --quit > "$output_file" 2>&1 &
     local godot_pid=$!
 
     # Wait for completion or timeout
@@ -151,7 +164,8 @@ execute_script_directly() {
     if command -v timeout &> /dev/null; then
         echo "⏱️ Using system timeout command (${timeout_duration}s)"
         local output
-        output=$(godot --headless --script "$test_path" 2>&1)
+        local project_path="${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR}"
+        output=$(godot --path "$project_path" --headless --script "$test_path" 2>&1)
         local exit_code=$?
 
         # Process output and return result
@@ -162,7 +176,8 @@ execute_script_directly() {
         
         # Start Godot in background and capture output
         local output_file="/tmp/godot_output_$$_$RANDOM"
-        godot --headless --script "$test_path" > "$output_file" 2>&1 &
+        local project_path="${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR}"
+        godot --path "$project_path" --headless --script "$test_path" > "$output_file" 2>&1 &
         local godot_pid=$!
 
         # Wait for completion or timeout
@@ -252,6 +267,13 @@ run_self_test() {
             temp_scene=$(create_node2d_scene "$test_path")
             execute_scene_test "$temp_scene" 300 "$verbose_mode"
             ;;
+        "scene_tree_main")
+            echo "🌳 Running SceneTree main-loop test (script-based)..."
+            local res_script
+            res_script="$(to_res_path "$test_path")"
+            # Godot --script wants a filesystem path or res:// path under --path
+            execute_script_directly "${res_script#res://}" 60 "$verbose_mode"
+            ;;
         "scene_tree_script")
             echo "🌳 Running SceneTree test (scene-based)..."
             local temp_scene
@@ -273,13 +295,14 @@ run_self_test() {
 execute_with_reporting() {
     local runner_args="$1"
     
-    echo "🏃‍♂️ Command: godot --script core/test_runner.gd $runner_args"
+    echo "🏃‍♂️ Command: godot --path ${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR} --script core/test_runner.gd $runner_args"
     echo ""
 
     # Execute the test runner with reporting and capture output
     local output_file="/tmp/gdsentry_reporting_output_$$_$RANDOM"
-    echo "DEBUG: Executing: godot --script core/test_runner.gd $runner_args"
-    eval "godot --script core/test_runner.gd $runner_args" > "$output_file" 2>&1
+    local project_path="${GDSENTRY_PROJECT_ROOT:-$GDSENTRY_DIR}"
+    echo "DEBUG: Executing: godot --path $project_path --script core/test_runner.gd $runner_args"
+    eval "godot --path \"$project_path\" --script core/test_runner.gd $runner_args" > "$output_file" 2>&1
     local exit_code=$?
 
     # Read the captured output

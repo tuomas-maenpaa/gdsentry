@@ -6,6 +6,24 @@ This guide helps you diagnose and resolve common issues when using GDSentry. Eac
 Installation and Setup Issues
 =============================
 
+Framework Root Not Found / Setup Refused
+----------------------------------------
+
+**Error:** messages such as ``GDSentry framework root resolution failed`` or the test runner aborts during startup.
+
+**Symptoms:**
+
+- Runner exits immediately with a non-zero status
+- Console shows which paths were tried (override, self-locate, or candidate scan)
+- Later ``load()`` failures for base classes or reporters after a bad root
+
+**Solutions:**
+
+1. Confirm the marker file exists: ``core/test_manager.gd`` under your GDSentry install folder.
+2. If the framework is not at ``res://gdsentry/``, set **Framework Root** on ``gdsentry_config.tres`` (for example ``res://.gdsentry`` or ``res://addons/gdsentry``).
+3. Ensure CLI scripts match the install path (``gdsentry/core/test_runner.gd`` vs ``.gdsentry/core/test_runner.gd``).
+4. Re-run with ``--verbose`` to see which resolution strategy succeeded (when setup works).
+
 GDTestManager Autoload Not Found
 --------------------------------
 

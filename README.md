@@ -203,6 +203,8 @@ godot --headless --script gdsentry/core/test_runner.gd --discover --verbose
 ./gdsentry-self-test/gdsentry-self-test.sh
 ```
 
+The install folder is auto-detected (or set `framework_root` in config). See the [configuration guide](docs/source/configuration.rst) for `.gdsentry/`, `addons/gdsentry/`, and override details.
+
 ### Test Organization
 
 ```zsh

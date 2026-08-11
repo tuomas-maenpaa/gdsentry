@@ -1,0 +1,17 @@
+; GDSentry standalone self-test project template
+; Copied to project.godot by gdsentry-self-test when no host project is found.
+; Do not commit a real project.godot in the GDSentry repo root.
+;
+; Godot 4.x minimal project — framework files live at res:// when this file
+; is materialized at the GDSentry checkout root.
+
+config_version=5
+
+[application]
+
+config/name="GDSentry Self-Test"
+config/features=PackedStringArray("4.2")
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"

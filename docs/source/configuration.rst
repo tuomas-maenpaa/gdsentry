@@ -15,6 +15,49 @@ GDSentry supports configuration through:
 
 Configuration files are stored as Godot ``.tres`` (text resource) files, making them version-controllable and easily editable.
 
+Framework Install Path
+======================
+
+GDSentry resolves its own install location so the framework can live under different folder names without hardcoding ``res://gdsentry/``.
+
+Resolution order
+----------------
+
+1. **Explicit override** — ``framework_root`` on ``GDTestConfig`` (authoritative). Must contain the marker file ``core/test_manager.gd`` or setup fails.
+2. **Self-locate** — derive the root from ``core/framework_paths.gd``'s own ``resource_path``.
+3. **Candidate scan** — first existing marker under:
+
+   - ``res://gdsentry``
+   - ``res://.gdsentry``
+   - ``res://addons/gdsentry``
+   - ``res://`` (standalone checkout where the framework *is* the Godot project)
+
+4. **Failure** — if nothing verifies, the runner aborts with a clear error. There is **no** silent fallback to ``res://gdsentry``.
+
+Empty ``framework_root`` means auto-detect. Existing config files without the field keep working.
+
+Examples
+--------
+
+.. code-block:: text
+
+   # Documented default layout
+   res://gdsentry/...
+
+   # Hidden submodule-style layout
+   res://.gdsentry/...
+
+   # Addon-style layout
+   res://addons/gdsentry/...
+
+Override in ``gdsentry_config.tres`` (Inspector field **Framework Root**), for example:
+
+.. code-block:: text
+
+   framework_root = "res://.gdsentry"
+
+CLI paths should match the install folder, e.g. ``godot --script .gdsentry/core/test_runner.gd --discover``.
+
 Basic Configuration Setup
 =========================
 

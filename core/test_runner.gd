@@ -35,8 +35,7 @@ var reporter_manager
 # ------------------------------------------------------------------------------
 # CONFIGURATION CONSTANTS
 # ------------------------------------------------------------------------------
-const TEST_ROOT_DIR = "res://gdsentry/"
-const EXAMPLES_DIR = TEST_ROOT_DIR + "examples/"
+const _Paths = preload("./framework_paths.gd")
 const DEFAULT_CONFIG_PATH = "res://gdsentry_config.tres"
 const DEFAULT_TIMEOUT = 30.0
 
@@ -82,23 +81,43 @@ func _init() -> void:
 	print("!!! TEST RUNNER STARTED !!!")
 	start_time = Time.get_unix_time_from_system()
 
-	# Preload base classes to ensure they're available for test scripts
-	var _scene_tree_test = preload("res://base_classes/scene_tree_test.gd")
-	var _node_test = preload("res://base_classes/node_test.gd")
-	var _node2d_test = preload("res://base_classes/node2d_test.gd")
-	var _gd_test = preload("res://base_classes/gd_test.gd")
+	# Parse command line arguments first (needed for config path)
+	parse_command_line_args()
+
+	# Load configuration (may include framework_root override)
+	load_configuration()
+
+	# Resolve framework root before any framework-internal loads
+	var override_root: String = ""
+	if config != null:
+		override_root = config.framework_root
+	if not _Paths.setup_from_config(_Paths, override_root):
+		push_error("GDSentry: aborting test runner — framework root could not be resolved")
+		quit(1)
+		return
+
+	if cli_args.verbose:
+		print("GDSentry: framework root = ", _Paths.root(), " (strategy: ", _Paths.last_strategy(), ")")
+
+	# Default discover target: framework examples when no path/dir given
+	if cli_args.discover and cli_args.test_path.is_empty() and cli_args.test_dir.is_empty():
+		cli_args.test_dir = _Paths.examples() + "/"
+
+	# Load base classes so they are available for test scripts
+	var _scene_tree_test = load(_Paths.base_class("scene_tree_test.gd"))
+	var _node_test = load(_Paths.base_class("node_test.gd"))
+	var _node2d_test = load(_Paths.base_class("node2d_test.gd"))
+	var _gd_test = load(_Paths.base_class("gd_test.gd"))
+	if not _scene_tree_test or not _node_test or not _node2d_test or not _gd_test:
+		push_error("GDSentry: failed to load base test classes from ", _Paths.root())
+		quit(1)
+		return
 
 	# Initialize core components
 	test_discovery = GDTestDiscovery.new()
 	# Add to scene tree for proper cleanup
 	if test_discovery:
 		get_root().add_child(test_discovery)
-
-	# Parse command line arguments
-	parse_command_line_args()
-
-	# Load configuration
-	load_configuration()
 
 	# Initialize reporter manager (available through autoload)
 	_initialize_reporter_manager()
@@ -194,7 +213,7 @@ func parse_command_line_args() -> void:
 	# Default behavior if no specific args provided
 	if not cli_args.test_path and not cli_args.test_dir and not cli_args.discover:
 		cli_args.discover = true
-		cli_args.test_dir = EXAMPLES_DIR
+		# test_dir filled after framework path setup (examples/)
 
 	# Debug: Show parsed arguments
 	print("DEBUG ARGS: test_path =", cli_args.test_path, ", test_dir =", cli_args.test_dir, ", discover =", cli_args.discover, ", verbose =", cli_args.verbose)
@@ -250,7 +269,7 @@ func _initialize_reporter_manager() -> void:
 	else:
 		push_error("ReporterManager autoload not found - reporting features will not be available")
 		# Try to create a fallback instance for basic functionality
-		var reporter_manager_script = load("res://reporters/manager/reporter_manager.gd")
+		var reporter_manager_script = load(_Paths.reporter("manager/reporter_manager.gd"))
 		if reporter_manager_script:
 			reporter_manager = reporter_manager_script.new()
 			if reporter_manager and reporter_manager.has_method("initialize"):
@@ -445,7 +464,7 @@ func execute_single_test(script_path: String) -> Variant:
 	var test_start_time = Time.get_unix_time_from_system()
 
 	# Load TestResult class dynamically
-	var TestResultClass = load("res://reporters/base/test_result.gd")
+	var TestResultClass = load(_Paths.reporter("base/test_result.gd"))
 	if not TestResultClass:
 		push_error("Failed to load TestResult class")
 		return null
@@ -934,8 +953,8 @@ func discover_test_scripts() -> Array[GDScript]:
 	# Search in common test directories
 	var search_dirs = [
 		"res://tests/",
-		"res://gdsentry/examples/",
-		"res://gdsentry/test_types/"
+		_Paths.examples() + "/",
+		_Paths.test_types() + "/"
 	]
 
 	for dir_path in search_dirs:
@@ -980,7 +999,7 @@ func find_test_scripts_in_directory(dir_path: String) -> Array[GDScript]:
 func _create_test_suite_result_from_test_results(test_results: Array):
 	"""Create a TestSuiteResult from actual test execution results"""
 	# Load TestResult class dynamically
-	var TestResultClass = load("res://reporters/base/test_result.gd")
+	var TestResultClass = load(_Paths.reporter("base/test_result.gd"))
 	if not TestResultClass:
 		push_error("Failed to load TestResult class")
 		return null
@@ -1003,7 +1022,7 @@ func _create_test_suite_result_from_test_results(test_results: Array):
 func _create_test_suite_result(discovery_result: GDTestDiscovery.TestDiscoveryResult):
 	"""Create a TestSuiteResult from discovery result and execution stats (legacy method)"""
 	# Load TestResult class dynamically
-	var TestResultClass = load("res://reporters/base/test_result.gd")
+	var TestResultClass = load(_Paths.reporter("base/test_result.gd"))
 	if not TestResultClass:
 		push_error("Failed to load TestResult class")
 		return null
@@ -1060,7 +1079,7 @@ func _determine_test_category(script_path: String) -> String:
 
 func _is_test_script(script_path: String) -> bool:
 	"""Check if a script is a test script by examining its content"""
-	var FileSystemCompatibility = load("res://utilities/file_system_compatibility.gd")
+	var FileSystemCompatibility = load(_Paths.utility("file_system_compatibility.gd"))
 	var file = FileSystemCompatibility.open_file(script_path, FileSystemCompatibility.READ)
 	if not file:
 		return false

@@ -24,6 +24,9 @@ var active_reporters: Array[String] = []
 var global_config: Dictionary = {}
 var is_initialized: bool = false
 
+# Path helper script (loaded from this file's location — no fragile relative preload)
+var _Paths: GDScript = null
+
 # Preload required classes
 var TestReporter
 var TestResult
@@ -48,13 +51,40 @@ func initialize() -> void:
 	is_initialized = true
 	print("ReporterManager: Initialized with ", reporters.size(), " reporters")
 
+func _load_paths_helper() -> GDScript:
+	"""Load framework_paths.gd by walking up from this script (reporters/manager -> root)."""
+	var script_res: Script = get_script()
+	if script_res == null:
+		return null
+	var script_path: String = script_res.resource_path
+	if script_path.is_empty():
+		return null
+	# reporters/manager/this.gd -> ../.. = framework root
+	var framework_root: String = script_path.get_base_dir().get_base_dir().get_base_dir()
+	var paths_path: String = framework_root.path_join("core").path_join("framework_paths.gd")
+	return load(paths_path)
+
+func _ensure_framework_paths() -> bool:
+	if _Paths == null:
+		_Paths = _load_paths_helper()
+	if _Paths == null:
+		push_error("ReporterManager: Could not load framework_paths.gd")
+		return false
+	if _Paths.is_ready():
+		return true
+	return _Paths.setup(_Paths)
+
 func _load_required_classes() -> void:
 	"""Load the required classes dynamically"""
-	TestReporter = load("res://reporters/base/test_reporter.gd")
+	if not _ensure_framework_paths():
+		push_error("ReporterManager: Framework root could not be resolved")
+		return
+
+	TestReporter = load(_Paths.reporter("base/test_reporter.gd"))
 	if not TestReporter:
 		push_error("ReporterManager: Failed to load TestReporter class")
 
-	TestResult = load("res://reporters/base/test_result.gd")
+	TestResult = load(_Paths.reporter("base/test_result.gd"))
 	if not TestResult:
 		push_error("ReporterManager: Failed to load TestResult class")
 
@@ -394,9 +424,17 @@ func _generate_output_path(reporter, _format: String) -> String:
 # ------------------------------------------------------------------------------
 func _register_default_reporters() -> void:
 	"""Register the default reporters that come with GDSentry"""
+	if not _ensure_framework_paths():
+		push_error("ReporterManager: Cannot register reporters without framework root")
+		return
+
+	var junit_path: String = _Paths.reporter("formats/junit_reporter.gd")
+	var html_path: String = _Paths.reporter("formats/html_reporter.gd")
+	var json_path: String = _Paths.reporter("formats/json_reporter.gd")
+
 	# Register JUnit XML reporter for CI/CD integration
-	if ResourceLoader.exists("res://reporters/formats/junit_reporter.gd"):
-		var junit_reporter = load("res://reporters/formats/junit_reporter.gd")
+	if ResourceLoader.exists(junit_path):
+		var junit_reporter = load(junit_path)
 		if junit_reporter:
 			register_reporter("junit", junit_reporter)
 			register_reporter("xml", junit_reporter)  # Alias for convenience
@@ -406,8 +444,8 @@ func _register_default_reporters() -> void:
 		push_warning("ReporterManager: JUnit reporter not found at expected location")
 
 	# Register HTML reporter for human-readable reports
-	if ResourceLoader.exists("res://reporters/formats/html_reporter.gd"):
-		var html_reporter = load("res://reporters/formats/html_reporter.gd")
+	if ResourceLoader.exists(html_path):
+		var html_reporter = load(html_path)
 		if html_reporter:
 			register_reporter("html", html_reporter)
 			register_reporter("htm", html_reporter)  # Alternative extension
@@ -417,8 +455,8 @@ func _register_default_reporters() -> void:
 		push_warning("ReporterManager: HTML reporter not found at expected location")
 
 	# Register JSON reporter for programmatic consumption
-	if ResourceLoader.exists("res://reporters/formats/json_reporter.gd"):
-		var json_reporter = load("res://reporters/formats/json_reporter.gd")
+	if ResourceLoader.exists(json_path):
+		var json_reporter = load(json_path)
 		if json_reporter:
 			register_reporter("json", json_reporter)
 		else:

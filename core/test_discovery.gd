@@ -20,9 +20,10 @@ class_name GDTestDiscovery
 # ------------------------------------------------------------------------------
 const DEFAULT_TEST_DIRECTORIES: Array[String] = [
 	"res://tests/",
-	"res://gdsentry/examples/",
 	"res://test/"
 ]
+
+const _Paths = preload("./framework_paths.gd")
 
 const TEST_BASE_CLASSES: Array[String] = [
 	"GDTest",
@@ -77,8 +78,8 @@ func discover_tests(custom_directories: Array[String] = [], recursive: bool = tr
 	"""Discover all test scripts in the project"""
 	var result = TestDiscoveryResult.new()
 
-	# Use default directories if none specified
-	var search_dirs = custom_directories if not custom_directories.is_empty() else DEFAULT_TEST_DIRECTORIES
+	# Use default directories if none specified (append framework examples when resolved)
+	var search_dirs: Array[String] = custom_directories if not custom_directories.is_empty() else _default_search_directories()
 
 	print("🔍 GDTestDiscovery: Starting test discovery...")
 	print("   Search directories:", search_dirs)
@@ -94,6 +95,18 @@ func discover_tests(custom_directories: Array[String] = [], recursive: bool = tr
 	_print_discovery_summary(result)
 
 	return result
+
+func _default_search_directories() -> Array[String]:
+	var dirs: Array[String] = DEFAULT_TEST_DIRECTORIES.duplicate()
+	if not _Paths.is_ready():
+		_Paths.setup(_Paths)
+	if _Paths.is_ready():
+		var examples_dir: String = _Paths.examples()
+		if not examples_dir.is_empty():
+			var with_slash: String = examples_dir if examples_dir.ends_with("/") else examples_dir + "/"
+			if not dirs.has(with_slash) and not dirs.has(examples_dir):
+				dirs.append(with_slash)
+	return dirs
 
 # ------------------------------------------------------------------------------
 # DIRECTORY SCANNING
