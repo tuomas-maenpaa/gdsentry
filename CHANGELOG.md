@@ -10,10 +10,12 @@ All notable changes to GDSentry will be documented in this file.
 - **Fail-fast path resolution**: unresolved or invalid roots log clearly and abort the runner; no silent fallback to `res://gdsentry`
 - **Self-test project template**: `templates/project.godot.template` materialized by the self-test harness when no host `project.godot` exists (cleaned up after the run)
 - **Core self-test**: `tests/core/framework_paths_test.gd` for resolution success and failure cases
+- **Product shape lock**: hybrid B+C1 (Cursor skills + Godot/harness); see `docs/assessment/PRODUCT-SHAPE-hybrid-B-C1.md`
 
 ### Changed
 
 - Core loaders (`test_runner`, `test_discovery`, `gdsentry.gd`, `reporter_manager`) resolve framework-internal paths through `framework_paths` instead of hardcoded `res://gdsentry/` / `res://base_classes/` defaults
+- Getting-started documents Godot + harness as the supported run path (no Python CLI front door)
 
 ## [1.0.0] - 2025-01-22
 

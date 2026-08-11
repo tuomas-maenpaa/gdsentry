@@ -11,7 +11,35 @@ Copy GDSentry to your Godot project:
     # Copy GDSentry to your Godot project
     cp -r gdsentry/ your-project/
 
-The folder name ``gdsentry/`` is the documented default. Alternate install folders such as ``.gdsentry/`` or ``addons/gdsentry/`` also work: the framework auto-detects its root (or you can set ``framework_root`` in ``gdsentry_config.tres``). See :doc:`configuration` for details. When using a non-default folder, point the CLI and autoload paths at that folder (for example ``.gdsentry/core/test_runner.gd``).
+The folder name ``gdsentry/`` is the documented default. Alternate install folders such as ``.gdsentry/`` or ``addons/gdsentry/`` also work: the framework auto-detects its root (or you can set ``framework_root`` in ``gdsentry_config.tres``). See :doc:`configuration` for details. When using a non-default folder, point Godot ``--script`` / autoload paths at that folder (for example ``.gdsentry/core/test_runner.gd``).
+
+Supported run path
+------------------
+
+Daily execution is **Godot + the self-test harness** (hybrid B+C1). There is no Python CLI front door on mainline.
+
+**Agent / developer happy path (framework self-check):**
+
+.. code-block:: bash
+
+    cd path/to/gdsentry   # or your-project/.gdsentry
+    ./gdsentry-self-test/gdsentry-self-test.sh --category core --pattern "*framework_paths*" --verbose
+
+**Run project tests via Godot:**
+
+.. code-block:: bash
+
+    # From the Godot project root (adjust folder name if nested as .gdsentry/)
+    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/
+    godot --script gdsentry/core/test_runner.gd --discover --verbose
+
+**Full self-test suite:**
+
+.. code-block:: bash
+
+    ./gdsentry/gdsentry-self-test/gdsentry-self-test.sh
+
+Product shape (skills + Godot/harness; WIP Python CLI archived) is documented in ``docs/assessment/PRODUCT-SHAPE-hybrid-B-C1.md``. Quill agentic work uses the Cursor project skill ``gdsentry-tdd``.
 
 Configure GDSentry Autoload
 -------------------------
@@ -22,22 +50,9 @@ Set up the GDSentry autoload to enable test discovery and execution:
 2. Go to **Project → Project Settings**
 3. Click the **AutoLoad** tab
 4. Click **Add** and configure:
-   - **Path:** ``res://gdsentry/core/test_manager.gd``
+   - **Path:** ``res://gdsentry/core/test_manager.gd`` (or ``res://.gdsentry/core/test_manager.gd``)
    - **Node Name:** ``GDTestManager``
 5. Check the **Enable** box to activate the autoload
-
-Run tests:
-
-.. code-block:: bash
-
-    # Run tests
-    godot --script gdsentry/core/test_runner.gd --test-dir gdsentry/examples/
-
-    # Run with advanced options
-    godot --script gdsentry/core/test_runner.gd --discover --verbose
-
-    # Run GDSentry self-tests
-    ./gdsentry/gdsentry-self-test/gdsentry-self-test.sh
 
 Verify Installation
 -------------------
