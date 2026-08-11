@@ -205,6 +205,8 @@ godot --headless --script gdsentry/core/test_runner.gd --discover --verbose
 
 The install folder is auto-detected (or set `framework_root` in config). See the [configuration guide](docs/source/configuration.rst) for `.gdsentry/`, `addons/gdsentry/`, and override details.
 
+**Supported UX:** Godot `--script` runner + `gdsentry-self-test` harness. Product shape (hybrid B+C1: Cursor skills + Godot; Python CLI not the front door) is in [docs/assessment/PRODUCT-SHAPE-hybrid-B-C1.md](docs/assessment/PRODUCT-SHAPE-hybrid-B-C1.md).
+
 ### Test Organization
 
 ```zsh
