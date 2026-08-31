@@ -42,6 +42,11 @@ dist/
 test_reports/
 reports/
 
+# Coverage thin-tool outputs (tools/coverage)
+.coverage_out/
+coverage_html/
+.gdsentry/coverage/
+
 # Documentation build files (if you have Sphinx or similar)
 docs/build/
 docs/_build/
