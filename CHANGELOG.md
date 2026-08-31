@@ -16,6 +16,8 @@ All notable changes to GDSentry will be documented in this file.
 
 - Core loaders (`test_runner`, `test_discovery`, `gdsentry.gd`, `reporter_manager`) resolve framework-internal paths through `framework_paths` instead of hardcoded `res://gdsentry/` / `res://base_classes/` defaults
 - Getting-started documents Godot + harness as the supported run path (no Python CLI front door)
+- **Thin coverage tool** under `tools/coverage/` (Gate 4 salvage; argparse sidecar)
+- **Methodology skill** at `.cursor/skills/gdsentry-methodology/` for agentic TDD/BDD/styles
 
 ## [1.0.0] - 2025-01-22
 

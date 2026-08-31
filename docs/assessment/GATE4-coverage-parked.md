@@ -1,14 +1,27 @@
-# Gate 4 decision: coverage salvage
+# Gate 4 decision: coverage salvage (reopened)
 
-**Date:** 2026-08-11  
-**Decision:** **Park** (plan recommended default G4.1)
+**Date:** 2026-08-31 (retro gate pass)  
+**Decision:** **Start coverage salvage** (overrides earlier park)
 
-Spine (FRC on `main`, docs happy path, `gdsentry-tdd` skill, harness 6/6) is in place. Coverage cherry-pick from `origin/wip/coverage-restructure` into `tools/coverage/` is **not** started in this arc.
+## What landed
 
-When reopening Gate 4 later:
+- Thin tool: [`tools/coverage/`](../../tools/coverage/) (`gdsentry_coverage` package + `run_coverage.py` argparse)  
+- Design pointers: [`coverage-refs/`](./coverage-refs/)  
+- Not included: Typer CLI, Podman, `gdsentry.toml` platform, WIP mega-merge  
 
-- Defaults: HTML + terminal summary; framework self-coverage first; Conda OK; re-home to `tools/coverage/`
-- Leave Typer CLI / trail / `src/` mega-move on the WIP vault
-- Extend `.cursor/skills/gdsentry-tdd` with how to invoke the thin tool
+## Defaults used
 
-See [FOLLOWUPS-hybrid-B-C1.md](./FOLLOWUPS-hybrid-B-C1.md) item F3.
+| Item | Choice |
+|------|--------|
+| Output | Terminal summary + HTML |
+| Target first | Framework / instrument path (self-coverage oriented) |
+| Python | Stdlib + Conda OK |
+| Path | `tools/coverage/` |
+
+## Known limits
+
+- Instrumented project prepare is thin (not full copytree)  
+- GDScript HTML reporter shipped but not always auto-invoked  
+- Full Godot coverage loop may need iteration — treat as v0 sidecar  
+
+See [FOLLOWUPS-hybrid-B-C1.md](./FOLLOWUPS-hybrid-B-C1.md).
